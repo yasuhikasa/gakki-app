@@ -43,6 +43,7 @@ const Signup: NextPage = () => {
         phoneNumber: data.phoneNumber,
         gender: data.gender,
         email: data.email,
+        role: 0, // ロールを 0（消費者）として保存
         createdAt: new Date(),
       });
 
