@@ -17,8 +17,13 @@ const withAdminAuth = (WrappedComponent: ComponentType<WithAdminAuthProps>) => {
       const checkAdminRole = async () => {
         if (user) {
           const userDoc = await getDoc(doc(db, 'users', user.uid));
-          if (userDoc.exists() && userDoc.data().role !== 1) {
-            router.push('/'); // 管理者でなければリダイレクト
+          if (userDoc.exists()) {
+            const userData = userDoc.data();
+            if (userData.role !== 1) { // roleが1でなければリダイレクト
+              router.push('/');
+            }
+          } else {
+            console.error("User document doesn't exist.");
           }
         } else {
           router.push('/login'); // ログインしていない場合はログインページへ

@@ -1,13 +1,12 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { onAuthStateChanged, User } from 'firebase/auth';
+import { useState, useEffect, useContext, createContext } from 'react';
 import { auth } from '@/libs/firebase';
+import { onAuthStateChanged, User } from 'firebase/auth';
 
-interface AuthContextProps {
+interface AuthContextType {
   user: User | null;
-  loading: boolean;
 }
 
-const AuthContext = createContext<AuthContextProps | undefined>(undefined);
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
@@ -17,22 +16,30 @@ export const useAuth = () => {
   return context;
 };
 
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUser(user);
+      } else {
+        setUser(null);
+      }
       setLoading(false);
     });
 
-    return () => unsubscribe(); // クリーンアップ
+    return () => unsubscribe();
   }, []);
 
+  if (loading) {
+    return <div>Loading...</div>; // ロード中の表示を追加
+  }
+
   return (
-    <AuthContext.Provider value={{ user, loading }}>
-      {!loading && children}
+    <AuthContext.Provider value={{ user }}>
+      {children}
     </AuthContext.Provider>
   );
 };
