@@ -1,0 +1,123 @@
+.container {
+  display: flex;
+  padding: 20px;
+  background-color: #f8f9fa;
+}
+
+.sidebar {
+  flex: 1;
+  max-width: 300px;
+  padding-right: 20px;
+  border-right: 1px solid #ddd;
+}
+
+.title {
+  font-size: 24px;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.category {
+  margin-bottom: 15px;
+}
+
+.categoryButton {
+  background-color: #007bff;
+  color: white;
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  font-size: 16px;
+  border-radius: 5px;
+  margin-bottom: 5px;
+}
+
+.categoryButton:hover {
+  background-color: #0056b3;
+}
+
+.subCategory {
+  padding-left: 10px;
+}
+
+.subCategory button {
+  background-color: transparent;
+  border: none;
+  color: #007bff;
+  cursor: pointer;
+  display: block;
+  margin: 5px 0;
+}
+
+.subCategory button:hover {
+  text-decoration: underline;
+}
+
+.products {
+  flex: 3;
+  padding-left: 20px;
+}
+
+.productGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.productCard {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.productCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.productContent {
+  cursor: pointer;
+}
+
+.productName {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+}
+
+.productPrice {
+  font-size: 16px;
+  color: #007bff;
+}
+
+.productManufacturer,
+.productReleaseDate {
+  font-size: 14px;
+  color: #555;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    margin-bottom: 20px;
+    border-right: none;
+    padding-right: 0;
+  }
+
+  .products {
+    padding-left: 0;
+  }
+
+  .productGrid {
+    grid-template-columns: 1fr; /* ワンカラム */
+  }
+}
