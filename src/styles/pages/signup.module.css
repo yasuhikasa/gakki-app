@@ -38,6 +38,21 @@
   flex: 1;
 }
 
+/* ラベルとセレクトボックス用のクラス */
+.label {
+  margin-bottom: 5px;
+  display: block;
+}
+
+.selectField {
+  width: 50%;
+  height: 40px;
+  padding: 8px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
 .error {
   color: red;
   font-size: 14px;
