@@ -8,7 +8,7 @@ interface CartItem {
 }
 
 interface CartContextProps {
-  cart: CartItem[];
+  cartItems: CartItem[]; // ここを cartItems に修正
   addToCart: (item: CartItem) => void;
   updateCartItem: (id: number, quantity: number) => void;
   removeFromCart: (id: number) => void;
@@ -27,10 +27,10 @@ export const useCart = () => {
 };
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
-  const [cart, setCart] = useState<CartItem[]>([]);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]); // cart から cartItems に変更
 
   const addToCart = (item: CartItem) => {
-    setCart((prev) => {
+    setCartItems((prev) => {
       const existingItem = prev.find((i) => i.id === item.id);
       if (existingItem) {
         return prev.map((i) => (i.id === item.id ? { ...i, quantity: i.quantity + item.quantity } : i));
@@ -40,21 +40,21 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const updateCartItem = (id: number, quantity: number) => {
-    setCart((prev) => prev.map((item) => (item.id === id ? { ...item, quantity } : item)));
+    setCartItems((prev) => prev.map((item) => (item.id === id ? { ...item, quantity } : item)));
   };
 
   const removeFromCart = (id: number) => {
-    setCart((prev) => prev.filter((item) => item.id !== id));
+    setCartItems((prev) => prev.filter((item) => item.id !== id));
   };
 
   const clearCart = () => {
-    setCart([]);
+    setCartItems([]);
   };
 
-  const totalAmount = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  const totalAmount = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
   return (
-    <CartContext.Provider value={{ cart, addToCart, updateCartItem, removeFromCart, clearCart, totalAmount }}>
+    <CartContext.Provider value={{ cartItems, addToCart, updateCartItem, removeFromCart, clearCart, totalAmount }}>
       {children}
     </CartContext.Provider>
   );
