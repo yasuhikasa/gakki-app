@@ -1,0 +1,17 @@
+.button {
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.button:hover {
+  background-color: #1565c0; /* ホバー時の色 */
+}
+
+.button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}

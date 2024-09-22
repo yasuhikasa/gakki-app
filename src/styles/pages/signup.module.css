@@ -1,0 +1,49 @@
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; /* 上から配置 */
+  min-height: 100vh; /* 画面全体の高さを確保しつつコンテンツに合わせる */
+  padding: 20px; /* 上下左右に余白を加える */
+  background-color: #f4f4f4;
+  overflow: auto;
+}
+
+.formWrapper {
+  background: #fff;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 500px;
+}
+
+.title {
+  text-align: center;
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.formGroup {
+  margin-bottom: 15px;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px; /* フィールド間に隙間を追加 */
+}
+
+.row > div {
+  flex: 1;
+}
+
+.error {
+  color: red;
+  font-size: 14px;
+  text-align: center;
+}
+
+.buttonWrapper {
+  margin-top: 20px;
+}

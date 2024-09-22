@@ -1,0 +1,23 @@
+.input {
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  width: 100%; /* デフォルトで全幅 */
+  transition: border-color 0.3s ease;
+}
+
+.input:focus {
+  border-color: #1976d2; /* フォーカス時の枠色 */
+  outline: none;
+}
+
+.error {
+  color: red;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.inputError {
+  border-color: red;
+}
