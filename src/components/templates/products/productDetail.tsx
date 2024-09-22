@@ -2,6 +2,7 @@ import { useRouter } from 'next/router';
 import { useState } from 'react';
 import styles from '@/styles/pages/productDetail.module.css';
 import Button from '@/components/parts/button';
+import { useCart } from '@/context/cartContext';
 
 // 商品データのモック
 const productsData = [
@@ -17,6 +18,7 @@ const ProductDetailPage = () => {
   const { id } = router.query;
   const product = productsData.find((p) => p.id === Number(id));
 
+  const { addToCart } = useCart();
   const [quantity, setQuantity] = useState(1);
 
   // 商品が見つからなかった場合
@@ -25,9 +27,14 @@ const ProductDetailPage = () => {
   }
 
   const handleAddToCart = () => {
-    console.log(`Added ${quantity} of ${product.name} to cart`);
-    // カートに追加する処理をここに記述
+    addToCart({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      quantity,
+    });
   };
+
 
   return (
     <div className={styles.container}>
