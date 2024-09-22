@@ -1,0 +1,81 @@
+.container {
+  padding: 20px;
+  background-color: #f8f9fa;
+}
+
+.productDetail {
+  width: 100%;
+  max-width: 1200px; /* 大きな画面での最大幅を指定 */
+  margin: 0 auto;
+  background-color: white;
+  padding: 40px;
+  border-radius: 10px;
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+}
+
+.title {
+  font-size: 32px;
+  font-weight: bold;
+  margin-bottom: 30px;
+  color: #333;
+}
+
+.productImage {
+  width: 100%;
+  height: auto;
+  margin-bottom: 30px;
+  border-radius: 10px;
+}
+
+.price {
+  font-size: 28px;
+  color: #007bff;
+  margin-bottom: 15px;
+}
+
+.manufacturer {
+  font-size: 18px;
+  color: #555;
+  margin-bottom: 30px;
+}
+
+.quantity {
+  display: flex;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.quantity label {
+  font-size: 18px;
+  margin-right: 10px;
+}
+
+.quantity input {
+  width: 80px;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  font-size: 16px;
+}
+
+.buttonWrapper {
+  margin-top: 30px;
+}
+
+@media (max-width: 768px) {
+  .productDetail {
+    padding: 20px;
+  }
+
+  .title {
+    font-size: 24px;
+  }
+
+  .price {
+    font-size: 22px;
+  }
+
+  .manufacturer, .quantity label {
+    font-size: 16px;
+  }
+}
