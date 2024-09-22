@@ -10,7 +10,7 @@ interface InputFieldProps {
   width?: string; // 幅の指定（デフォルト: 100%）
   height?: string; // 高さの指定（デフォルト: 40px）
   value?: string; // インプットの値
-  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void; // 外部からのonChange関数
 }
 
 const InputField = ({
@@ -29,20 +29,17 @@ const InputField = ({
     height,
   };
 
-  // カスタムの onChange ハンドラと react-hook-form の onChange ハンドラを統合
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    if (onChange) onChange(e); // カスタム onChange を呼び出す
-    register.onChange(e); // react-hook-form の onChange を呼び出す
-  };
-
   return (
     <div>
       <label>{label}</label>
       <input
         type={type}
         className={`${styles.input} ${error ? styles.inputError : ''}`}
-        value={value}
-        onChange={handleChange} // 統合した onChange ハンドラを使用
+        value={value} // 外部からの値を受け取る
+        onChange={(e) => {
+          if (onChange) onChange(e); // 外部からのonChangeを呼び出す
+          register.onChange(e); // react-hook-formのonChangeを呼び出す
+        }}
         name={register.name} // registerからnameを直接指定
         ref={register.ref} // registerからrefを直接指定
         style={inputStyle}

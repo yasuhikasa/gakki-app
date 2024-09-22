@@ -1,24 +1,43 @@
 import React, { useState, useEffect } from 'react';
 import { collection, getDocs, addDoc, doc, updateDoc, deleteDoc } from 'firebase/firestore';
+import { useForm } from 'react-hook-form';
 import { db } from '@/libs/firebase'; // Firebaseの設定ファイルをインポート
+import InputField from '@/components/parts/inputField'; // InputFieldコンポーネントをインポート
 import Button from '@/components/parts/button'; // Buttonコンポーネントをインポート
 import styles from '@/styles/pages/productManagement.module.css'; // スタイルシートをインポート
-
 
 interface Product {
   id: string;
   name: string;
   price: number;
   stock: number;
+  category: string;
+  subCategory: string;
+  imageUrl: string;
 }
 
 const ProductManagement: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
-  const [newProduct, setNewProduct] = useState({ name: '', price: 0, stock: 0 });
+  const { register } = useForm();
+  const [newProduct, setNewProduct] = useState({
+    name: '',
+    price: 0,
+    stock: 0,
+    category: '',
+    subCategory: '',
+    imageUrl: '',
+  });
   const [editingProductId, setEditingProductId] = useState<string | null>(null);
   const [updatedProduct, setUpdatedProduct] = useState<Partial<Product>>({});
 
-  // 初期の商品データを取得
+  // カテゴリとサブカテゴリ
+  const categories = ['ギター', 'ベース', 'ドラム'] as const;
+  const subCategories = {
+    ギター: ['Fender', 'Gibson', 'Ibanez'],
+    ベース: ['Fender', 'Music Man', 'Warwick'],
+    ドラム: ['Yamaha', 'Tama', 'Pearl'],
+  } as const;
+
   useEffect(() => {
     const fetchProducts = async () => {
       const productsCollection = await getDocs(collection(db, 'products'));
@@ -27,28 +46,38 @@ const ProductManagement: React.FC = () => {
         name: doc.data().name,
         price: doc.data().price,
         stock: doc.data().stock,
+        category: doc.data().category,
+        subCategory: doc.data().subCategory,
+        imageUrl: doc.data().imageUrl,
       }));
       setProducts(productList);
     };
     fetchProducts();
   }, []);
 
-  // 新しい商品の追加
+  // 商品の追加
   const addProduct = async () => {
-    if (newProduct.name === '' || newProduct.price <= 0 || newProduct.stock < 0) {
-      alert('商品名、価格、在庫数を正しく入力してください');
+    if (
+      newProduct.name === '' ||
+      newProduct.price <= 0 ||
+      newProduct.stock < 0 ||
+      newProduct.category === '' ||
+      newProduct.subCategory === '' ||
+      newProduct.imageUrl === ''
+    ) {
+      alert('すべての項目を正しく入力してください');
       return;
     }
     const addedProductRef = await addDoc(collection(db, 'products'), newProduct);
     const addedProduct: Product = { ...newProduct, id: addedProductRef.id };
     setProducts([...products, addedProduct]);
-    setNewProduct({ name: '', price: 0, stock: 0 });
+    setNewProduct({ name: '', price: 0, stock: 0, category: '', subCategory: '', imageUrl: '' });
   };
 
   // 商品の編集を開始
   const startEditingProduct = (product: Product) => {
     setEditingProductId(product.id);
-    setUpdatedProduct({ name: product.name, price: product.price, stock: product.stock });
+    setUpdatedProduct({ ...product });
   };
 
   // 編集された商品を保存
@@ -59,9 +88,7 @@ const ProductManagement: React.FC = () => {
 
       setProducts((prevProducts) =>
         prevProducts.map((product) =>
-          product.id === editingProductId
-            ? { ...product, ...updatedProduct }
-            : product
+          product.id === editingProductId ? { ...product, ...updatedProduct } : product
         )
       );
       setEditingProductId(null);
@@ -76,8 +103,17 @@ const ProductManagement: React.FC = () => {
     setProducts(products.filter((product) => product.id !== id));
   };
 
+  // 画像アップロード処理
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      const imageUrl = URL.createObjectURL(file);
+      setNewProduct((prev) => ({ ...prev, imageUrl }));
+    }
+  };
+
   // 新商品のフィールド変更を処理する
-  const handleNewProductChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleNewProductChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setNewProduct((prev) => ({
       ...prev,
@@ -86,7 +122,7 @@ const ProductManagement: React.FC = () => {
   };
 
   // 編集商品のフィールド変更を処理する
-  const handleUpdatedProductChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleUpdatedProductChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setUpdatedProduct((prev) => ({
       ...prev,
@@ -98,30 +134,65 @@ const ProductManagement: React.FC = () => {
     <div className={styles.container}>
       <h2>商品管理</h2>
       <div className={styles.form}>
-        <label>商品名</label>
-        <input
-          className={styles.input}
-          type="text"
-          name="name"
+      <InputField
+          label="商品名"
+          register={register('name')}
           value={newProduct.name}
-          onChange={handleNewProductChange}
+          onChange={(e) => setNewProduct((prev) => ({ ...prev, name: e.target.value }))}
         />
-        <label>価格</label>
+        <InputField
+          label="価格"
+          register={register('price')}
+          value={newProduct.price.toString()}
+          type="number"
+          onChange={(e) => setNewProduct((prev) => ({ ...prev, price: Number(e.target.value) }))}
+        />
+        <InputField
+          label="在庫数"
+          register={register('stock')}
+          value={newProduct.stock.toString()}
+          type="number"
+          onChange={(e) => setNewProduct((prev) => ({ ...prev, stock: Number(e.target.value) }))}
+        />
+        <label>カテゴリ</label>
+        <select
+          className={styles.input}
+          name="category"
+          value={newProduct.category}
+          onChange={handleNewProductChange}
+        >
+          <option value="">選択してください</option>
+          {categories.map((category) => (
+            <option key={category} value={category}>
+              {category}
+            </option>
+          ))}
+        </select>
+        {newProduct.category && (
+          <>
+            <label>サブカテゴリ</label>
+            <select
+              className={styles.input}
+              name="subCategory"
+              value={newProduct.subCategory}
+              onChange={handleNewProductChange}
+            >
+              <option value="">選択してください</option>
+              {subCategories[newProduct.category as keyof typeof subCategories].map((subCategory) => (
+                <option key={subCategory} value={subCategory}>
+                  {subCategory}
+                </option>
+              ))}
+            </select>
+          </>
+        )}
+        <label>商品画像</label>
         <input
           className={styles.input}
-          type="number"
-          name="price"
-          value={newProduct.price}
-          onChange={handleNewProductChange}
+          type="file"
+          onChange={handleImageUpload}
         />
-        <label>在庫数</label>
-        <input
-          className={styles.input}
-          type="number"
-          name="stock"
-          value={newProduct.stock}
-          onChange={handleNewProductChange}
-        />
+        {newProduct.imageUrl && <img src={newProduct.imageUrl} alt="商品画像" width="100" />}
         <Button label="商品追加" onClick={addProduct} width="100%" />
       </div>
 
@@ -130,42 +201,62 @@ const ProductManagement: React.FC = () => {
           <li key={product.id} className={styles.li}>
             {editingProductId === product.id ? (
               <div>
-                <label>商品名</label>
-                <input
-                  className={styles.editingInput}
-                  type="text"
-                  name="name"
-                  value={updatedProduct.name || ''}
-                  onChange={handleUpdatedProductChange}
+                <InputField
+                  label="商品名"
+                  register={register('name')} // react-hook-formのregisterを渡す
+                  value={newProduct.name}
+                  onChange={(e) => setNewProduct((prev) => ({ ...prev, name: e.target.value }))}
                 />
-                <label>価格</label>
-                <input
-                  className={styles.editingInput}
+                <InputField
+                  label="価格"
+                  register={register('price')} // react-hook-formのregisterを渡す
+                  value={newProduct.price.toString()}
                   type="number"
-                  name="price"
-                  value={updatedProduct.price?.toString() || ''}
-                  onChange={handleUpdatedProductChange}
+                  onChange={(e) => setNewProduct((prev) => ({ ...prev, price: Number(e.target.value) }))}
                 />
-                <label>在庫数</label>
-                <input
-                  className={styles.editingInput}
+                <InputField
+                  label="在庫数"
+                  register={register('stock')} // react-hook-formのregisterを渡す
+                  value={newProduct.stock.toString()}
                   type="number"
-                  name="stock"
-                  value={updatedProduct.stock?.toString() || ''}
-                  onChange={handleUpdatedProductChange}
+                  onChange={(e) => setNewProduct((prev) => ({ ...prev, stock: Number(e.target.value) }))}
                 />
-                <div className={styles.buttonGroup}>
-                  <Button label="保存" onClick={saveEditedProduct} width="100%" />
-                  <Button label="キャンセル" onClick={() => setEditingProductId(null)} width="100%" />
-                </div>
+                <label>カテゴリ</label>
+                <select
+                  className={styles.editingInput}
+                  name="category"
+                  value={updatedProduct.category || ''}
+                  onChange={handleUpdatedProductChange}
+                >
+                  <option value="">選択してください</option>
+                  {categories.map((category) => (
+                    <option key={category} value={category}>
+                      {category}
+                    </option>
+                  ))}
+                </select>
+                <label>サブカテゴリ</label>
+                <select
+                  className={styles.editingInput}
+                  name="subCategory"
+                  value={updatedProduct.subCategory || ''}
+                  onChange={handleUpdatedProductChange}
+                >
+                  <option value="">選択してください</option>
+                  {subCategories[updatedProduct.category as keyof typeof subCategories]?.map((subCategory) => (
+                    <option key={subCategory} value={subCategory}>
+                      {subCategory}
+                    </option>
+                  ))}
+                </select>
+                <Button label="保存" onClick={saveEditedProduct} width="100%" />
+                <Button label="キャンセル" onClick={() => setEditingProductId(null)} width="100%" />
               </div>
             ) : (
               <div>
                 {product.name} - {product.price}円 - 在庫: {product.stock}
-                <div className={styles.buttonGroup}>
-                  <Button label="編集" onClick={() => startEditingProduct(product)} width="100%" />
-                  <Button label="削除" onClick={() => deleteProduct(product.id)} width="100%" />
-                </div>
+                <Button label="編集" onClick={() => startEditingProduct(product)} width="100%" />
+                <Button label="削除" onClick={() => deleteProduct(product.id)} width="100%" />
               </div>
             )}
           </li>
