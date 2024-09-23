@@ -1,14 +1,14 @@
 import React from 'react';
-import Checkout from '@/components/templates/checkoutPage';
+import Confirm from '@/components/templates/confirm';
 import { NextPage } from 'next';
 import Layout from '@/components/layout/Layout';
 
-const CheckoutPage: NextPage = () => {
+const ConfirmPage: NextPage = () => {
   return (
     <Layout>
-      <Checkout />
+      <Confirm />
     </Layout>
   );
 }
 
-export default CheckoutPage;
+export default ConfirmPage;

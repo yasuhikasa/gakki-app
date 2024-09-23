@@ -1,22 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { loadStripe } from '@stripe/stripe-js';
-import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
+import { useStripe, useElements, CardElement } from '@stripe/react-stripe-js';
 import axios from 'axios';
-import { useCart } from '@/context/cartContext'; // カート情報を取得
-import { useAuth } from '@/context/authContext'; // ユーザー認証情報を取得
-import { db } from '@/libs/firebase'; // Firestoreのインポート
+import { useCart } from '@/context/cartContext';
+import { useAuth } from '@/context/authContext';
+import { db } from '@/libs/firebase';
 import { doc, getDoc } from 'firebase/firestore';
+import { useRouter } from 'next/router';
 import styles from '@/styles/pages/checkout.module.css';
 import ButtonComponent from '@/components/parts/button';
 
-// Stripe公開キーを使用してインスタンスを作成
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
-
 const CheckoutForm = () => {
+  const router = useRouter();
   const stripe = useStripe();
   const elements = useElements();
-  const { totalAmount } = useCart(); // カート情報と合計金額を取得
-  const { user } = useAuth(); // ユーザー認証情報を取得
+  const { totalAmount, clearCart } = useCart();
+  const { user } = useAuth();
   const [address, setAddress] = useState({
     addressLine: '',
     city: '',
@@ -27,14 +25,12 @@ const CheckoutForm = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [paymentSucceeded, setPaymentSucceeded] = useState(false);
 
-  // Firestoreから住所情報を取得
   useEffect(() => {
     const fetchUserAddress = async () => {
       if (user) {
         try {
           const userDoc = doc(db, 'users', user.uid);
           const userSnapshot = await getDoc(userDoc);
-
           if (userSnapshot.exists()) {
             const userData = userSnapshot.data();
             setAddress({
@@ -57,41 +53,44 @@ const CheckoutForm = () => {
     event.preventDefault();
     if (!stripe || !elements) return;
 
-    if (!window.confirm("決済を確定してもよろしいですか？")) {
-      return; // ユーザーがキャンセルを選択した場合、処理を中止
-    }
-
     setIsProcessing(true);
 
     try {
-      // 支払いIntentを作成するため、バックエンドAPIを呼び出す
+      const cardElement = elements.getElement(CardElement);
+      const { error, paymentMethod } = await stripe.createPaymentMethod({
+        type: 'card',
+        card: cardElement!,
+      });
+
+      if (error) {
+        setErrorMessage(error.message || '支払い方法の作成に失敗しました');
+        setIsProcessing(false);
+        return;
+      }
+
       const { data } = await axios.post('/api/payment', {
-        amount: totalAmount, // 支払い金額を送信
+        payment_method: paymentMethod.id,
+        amount: totalAmount * 100,
       });
 
       const { clientSecret } = data;
 
-      // Stripeを使って支払いを確認する
-      const result = await stripe.confirmCardPayment(clientSecret, {
-        payment_method: {
-          card: elements.getElement(CardElement)!,
-        },
-      });
+      const result = await stripe.confirmCardPayment(clientSecret);
 
       if (result.error) {
         setErrorMessage(result.error.message || '支払いに失敗しました');
         setIsProcessing(false);
       } else if (result.paymentIntent?.status === 'succeeded') {
         setPaymentSucceeded(true);
+        clearCart();
         setIsProcessing(false);
-        // 確認ページへ遷移
-        window.location.href = '/confirmation';
+        router.push('/confirm');
       }
     } catch (error) {
       if (error instanceof Error) {
         setErrorMessage(error.message);
       } else {
-        setErrorMessage('支払い処理中に不明なエラーが発生しました');
+        setErrorMessage('支払い処理中に予期しないエラーが発生しました');
       }
       setIsProcessing(false);
     }
@@ -100,20 +99,15 @@ const CheckoutForm = () => {
   return (
     <form onSubmit={handleCardPayment} className={styles.form}>
       <h3>クレジットカードで支払う</h3>
-      <p className={styles.totalAmount}>合計金額: {totalAmount}円</p> {/* 合計金額を表示 */}
-
-      {/* 配送先情報 */}
+      <p className={styles.totalAmount}>合計金額: {totalAmount}円</p>
       <div className={styles.address}>
         <p>配送先:〒{address.postalCode} {address.prefecture} {address.city} {address.addressLine} </p>
       </div>
-
       <div className={styles.cardElementWrapper}>
         <CardElement className={styles.cardElement} />
       </div>
-
       {errorMessage && <p className={styles.errorMessage}>{errorMessage}</p>}
       {paymentSucceeded && <p className={styles.successMessage}>支払いが成功しました！</p>}
-
       <ButtonComponent
         label={isProcessing ? '処理中...' : '支払いを確定'}
         width="100%"
@@ -124,15 +118,4 @@ const CheckoutForm = () => {
   );
 };
 
-const CheckoutPage = () => {
-  return (
-    <div className={styles.container}>
-      <h2 className={styles.heading}>決済ページ</h2>
-      <Elements stripe={stripePromise}>
-        <CheckoutForm />
-      </Elements>
-    </div>
-  );
-};
-
-export default CheckoutPage;
+export default CheckoutForm;

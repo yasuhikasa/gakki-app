@@ -8,23 +8,26 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {
     try {
-      const { payment_method } = req.body;
+      const { payment_method, amount } = req.body;
+
+      if (!payment_method || !amount) {
+        return res.status(400).json({ error: 'Payment method and amount are required' });
+      }
 
       const paymentIntent = await stripe.paymentIntents.create({
-        amount: 1000, // 1000 = 10.00 USD, 金額を動的に変更できます
+        amount, // 金額は最小単位で指定（例: 1000 = 10.00 USD）
         currency: 'usd',
         payment_method,
+        confirm: true,
+        automatic_payment_methods: { enabled: true }, // これによりリダイレクトが不要になる場合がある
+        // もしリダイレクトが必要なら、下の行をコメントアウト
+        return_url: `${process.env.NEXT_PUBLIC_DOMAIN || 'http://localhost:3000'}/confirmation`,
       });
 
-      res.status(200).json({ paymentIntent });
+      res.status(200).json({ clientSecret: paymentIntent.client_secret });
     } catch (error) {
-      if (error instanceof Stripe.errors.StripeError) {
-        // Stripeのエラー処理
-        res.status(400).json({ error: error.message });
-      } else {
-        // その他のエラー処理
-        res.status(500).json({ error: 'Internal Server Error' });
-      }
+      console.error('Stripe error:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
     }
   } else {
     res.setHeader('Allow', 'POST');
