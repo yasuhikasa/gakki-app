@@ -1,94 +1,84 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
 import { doc, getDoc } from 'firebase/firestore';
-import { db } from '@/libs/firebase';
-import { useAuth } from '@/context/authContext';
-import { useCart } from '@/context/cartContext';
+import { db } from '@/libs/firebase'; // Firestore設定
 import styles from '@/styles/pages/confirm.module.css';
 
-interface Address {
-  addressLine: string;
-  city: string;
-  prefecture: string;
-  postalCode: string;
-}
-
-interface UserInfo {
-  lastName: string;
-  firstName: string;
+interface Order {
+  id: string;
+  address: {
+    addressLine: string;
+    city: string;
+    postalCode: string;
+    prefecture: string;
+  };
+  cartItems: Array<{
+    id: string;
+    name: string;
+    price: number;
+    quantity: number;
+  }>;
+  totalAmount: number;
+  createdAt: any;
 }
 
 const ConfirmationPage = () => {
-  const { cartItems, totalAmount } = useCart();
-  const { user } = useAuth();
-  const [address, setAddress] = useState<Address | null>(null);
-  const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
+  const router = useRouter();
+  const [order, setOrder] = useState<Order | null>(null); // 注文情報の状態
+  const orderId = 'dtaS5X5h9SJiv5S0wDGz'; // 注文IDをハードコード（例）で指定
 
+  // Firestoreから注文情報を取得
   useEffect(() => {
-    const fetchUserDetails = async () => {
-      if (user) {
-        try {
-          const userDocRef = doc(db, 'users', user.uid);
-          const userDocSnapshot = await getDoc(userDocRef);
+    const fetchOrder = async () => {
+      try {
+        const orderDocRef = doc(db, 'orders', orderId); // 'orders' コレクションから注文情報を取得
+        const orderDocSnapshot = await getDoc(orderDocRef);
 
-          if (userDocSnapshot.exists()) {
-            const userData = userDocSnapshot.data();
-            setAddress({
-              addressLine: userData.addressLine,
-              city: userData.city,
-              prefecture: userData.prefecture,
-              postalCode: userData.postalCode,
-            });
-            setUserInfo({
-              lastName: userData.lastName,
-              firstName: userData.firstName,
-            });
-          }
-        } catch (error) {
-          console.error('Error fetching user details:', error);
+        if (orderDocSnapshot.exists()) {
+          const orderData = orderDocSnapshot.data() as Order;
+          setOrder(orderData);
+        } else {
+          console.error('注文情報が見つかりません');
         }
+      } catch (error) {
+        console.error('注文情報の取得に失敗しました:', error);
       }
     };
 
-    fetchUserDetails();
-  }, [user]);
+    fetchOrder();
+  }, [orderId]);
 
   return (
     <div className={styles.container}>
       <h2 className={styles.heading}>決済が完了しました！</h2>
       <p className={styles.paragraph}>ご注文が確定しました。ありがとうございます。</p>
 
-      <div className={styles.confirmationDetails}>
-        <h3 className={styles.subheading}>ご注文内容</h3>
-        <ul className={styles.itemList}>
-          {cartItems.map((item) => (
-            <li key={item.id} className={styles.item}>
-              <p className={styles.itemText}>{item.name}</p>
-              <p className={styles.itemText}>個数: {item.quantity}</p>
-              <p className={styles.itemText}>価格: {item.price}円</p>
-            </li>
-          ))}
-        </ul>
+      {order ? (
+        <div className={styles.confirmationDetails}>
+          <h3 className={styles.subheading}>ご注文内容</h3>
+          <ul className={styles.itemList}>
+            {order.cartItems.map((item) => (
+              <li key={item.id} className={styles.item}>
+                <p className={styles.itemText}>{item.name}</p>
+                <p className={styles.itemText}>個数: {item.quantity}</p>
+                <p className={styles.itemText}>価格: {item.price}円</p>
+              </li>
+            ))}
+          </ul>
 
-        <h3 className={styles.subheading}>配送先</h3>
-        {address ? (
-          <div>
-            <p>{address.prefecture} {address.city} {address.addressLine}</p>
-            <p>郵便番号: {address.postalCode}</p>
-          </div>
-        ) : (
-          <p>配送先情報が見つかりません</p>
-        )}
+          <h3 className={styles.subheading}>配送先</h3>
+          <p>〒: {order.address.postalCode}</p>
+          <p>{order.address.prefecture} {order.address.city} {order.address.addressLine}</p>
 
-        <h3 className={styles.subheading}>お名前</h3>
-        {userInfo ? (
-          <p>{userInfo.lastName} {userInfo.firstName}</p>
-        ) : (
-          <p>ユーザー情報が見つかりません</p>
-        )}
+          <h3 className={styles.subheading}>合計金額</h3>
+          <p className={styles.totalAmount}>{order.totalAmount}円</p>
 
-        <h3 className={styles.subheading}>合計金額</h3>
-        <p className={styles.totalAmount}>{totalAmount}円</p>
-      </div>
+          <h3 className={styles.subheading}>注文日時</h3>
+          <p>{order.createdAt.toDate().toLocaleString()}</p> {/* 日付をフォーマットして表示 */}
+        </div>
+      ) : (
+        <p>注文情報が見つかりません</p>
+      )}
     </div>
   );
 };

@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
 import { useStripe, useElements, CardElement } from '@stripe/react-stripe-js';
 import axios from 'axios';
 import { useCart } from '@/context/cartContext';
 import { useAuth } from '@/context/authContext';
-import { db } from '@/libs/firebase';
-import { doc, getDoc } from 'firebase/firestore';
-import { useRouter } from 'next/router';
+import { db } from '@/libs/firebase'; // Firestoreのインポート
+import { doc, getDoc, collection, addDoc } from 'firebase/firestore'; // Firestoreからデータ操作
 import styles from '@/styles/pages/checkout.module.css';
 import ButtonComponent from '@/components/parts/button';
 
@@ -13,7 +13,7 @@ const CheckoutForm = () => {
   const router = useRouter();
   const stripe = useStripe();
   const elements = useElements();
-  const { totalAmount, clearCart } = useCart();
+  const { totalAmount, cartItems, clearCart } = useCart();
   const { user } = useAuth();
   const [address, setAddress] = useState({
     addressLine: '',
@@ -25,6 +25,7 @@ const CheckoutForm = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [paymentSucceeded, setPaymentSucceeded] = useState(false);
 
+  // ユーザーの住所を取得
   useEffect(() => {
     const fetchUserAddress = async () => {
       if (user) {
@@ -49,9 +50,16 @@ const CheckoutForm = () => {
     fetchUserAddress();
   }, [user]);
 
+  // 支払い処理と注文情報の保存
   const handleCardPayment = async (event: React.FormEvent) => {
     event.preventDefault();
     if (!stripe || !elements) return;
+
+    // 注文確定前に確認アラートを表示
+    const confirmPayment = window.confirm("本当に注文を確定しますか？");
+    if (!confirmPayment) {
+      return; // ユーザーがキャンセルを選択した場合、処理を中止
+    }
 
     setIsProcessing(true);
 
@@ -81,6 +89,8 @@ const CheckoutForm = () => {
         setErrorMessage(result.error.message || '支払いに失敗しました');
         setIsProcessing(false);
       } else if (result.paymentIntent?.status === 'succeeded') {
+        // 注文情報をFirestoreに保存する
+        await saveOrderToFirestore();
         setPaymentSucceeded(true);
         clearCart();
         setIsProcessing(false);
@@ -96,12 +106,34 @@ const CheckoutForm = () => {
     }
   };
 
+  // Firestoreに注文情報を保存する関数
+  const saveOrderToFirestore = async () => {
+    if (user) {
+      try {
+        await addDoc(collection(db, 'orders'), {
+          userId: user.uid,
+          cartItems: cartItems.map(item => ({
+            id: item.id,
+            name: item.name,
+            price: item.price,
+            quantity: item.quantity,
+          })),
+          totalAmount,
+          address,
+          createdAt: new Date(),
+        });
+      } catch (error) {
+        console.error('Error saving order to Firestore:', error);
+      }
+    }
+  };
+
   return (
     <form onSubmit={handleCardPayment} className={styles.form}>
       <h3>クレジットカードで支払う</h3>
       <p className={styles.totalAmount}>合計金額: {totalAmount}円</p>
       <div className={styles.address}>
-        <p>配送先:〒{address.postalCode} {address.prefecture} {address.city} {address.addressLine} </p>
+        <p>配送先:〒{address.postalCode} {address.prefecture} {address.city} {address.addressLine}</p>
       </div>
       <div className={styles.cardElementWrapper}>
         <CardElement className={styles.cardElement} />

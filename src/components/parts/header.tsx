@@ -43,11 +43,10 @@ const Header = () => {
     setCartItemCount(totalItems); // 総数を cartItemCount に反映
   }, [cartItems]);
 
-
   const handleLogout = async () => {
     try {
       await auth.signOut();
-      router.push('/products'); // ログアウト後にログイン画面へ遷移
+      router.push('/products'); // ログアウト後に商品一覧ページへ遷移
     } catch (error) {
       console.error('Error during logout', error);
     }
@@ -65,15 +64,34 @@ const Header = () => {
     router.push('/login?redirect=products'); // ログインページへ遷移
   };
 
+  const goToMyPage = () => {
+    router.push('/mypage'); // マイページへ遷移
+  };
+
+  const goToHomePage = () => {
+    router.push('/'); // ホームページへ遷移
+  };
+
+  const goToProducts = () => {
+    router.push('/products'); // 商品一覧ページへ遷移
+  };
+
   return (
     <header className={styles.header}>
       <div className={styles.banner}>
-        <h1 className={styles.title}>楽器屋オンラインショップ</h1>
+        <h1 className={styles.title} onClick={goToHomePage}>楽器屋オンラインショップ</h1> {/* タイトルクリックでホームページへ遷移 */}
       </div>
       <nav className={styles.nav}>
+        {/* 商品一覧ボタン */}
+        <HeaderButton label="商品一覧" onClick={goToProducts} />
+
         {/* 管理者ボタン: Firestoreから取得したロールが1の場合に表示 */}
         {role === 1 && (
           <HeaderButton label="管理者ページ" onClick={goToAdminPage} />
+        )}
+        {/* マイページボタン: ログインしているユーザーにのみ表示 */}
+        {user && (
+          <HeaderButton label="マイページ" onClick={goToMyPage} />
         )}
         {/* カートボタン */}
         <HeaderButton label={`カート (${cartItemCount})`} onClick={goToCart} />
@@ -89,4 +107,3 @@ const Header = () => {
 };
 
 export default Header;
-
