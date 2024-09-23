@@ -1,22 +1,33 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { doc, getDoc, collection, getDocs } from 'firebase/firestore';
-import { db } from '@/libs/firebase'; // Firestoreの設定
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '@/libs/firebase';
 import Button from '@/components/parts/button';
 import { useCart } from '@/context/cartContext';
-import Sidebar from '@/components/parts/sidebar'; // サイドバーのインポート
+import Sidebar from '@/components/parts/sidebar';
 import styles from '@/styles/pages/productDetail.module.css';
 import Image from 'next/image';
+import Cookies from 'js-cookie';
+
+// 商品データの型定義
+interface Product {
+  id: string;
+  name: string;
+  price: number;
+  description: string;
+  imageUrl: string;
+  subCategory: string;
+}
 
 const ProductDetailPage = () => {
   const router = useRouter();
   const { id } = router.query;
-  const { cartItems, addToCart } = useCart();
-  const [product, setProduct] = useState(null); // 商品データ
+  const { cartItems, addToCart, updateCartItemQuantity } = useCart();
+  const [product, setProduct] = useState<Product | null>(null); // 商品データ
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(true); // ロード中フラグ
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null); // カテゴリ選択用
-  const [selectedManufacturer, setSelectedManufacturer] = useState<string | null>(null); // メーカー選択用
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedManufacturer, setSelectedManufacturer] = useState<string | null>(null);
 
   // 商品の詳細情報を取得
   useEffect(() => {
@@ -26,7 +37,7 @@ const ProductDetailPage = () => {
           const productRef = doc(db, 'products', id as string);
           const productSnapshot = await getDoc(productRef);
           if (productSnapshot.exists()) {
-            setProduct(productSnapshot.data());
+            setProduct({ id: productSnapshot.id, ...productSnapshot.data() } as Product);
           } else {
             console.error('Product not found');
           }
@@ -42,12 +53,28 @@ const ProductDetailPage = () => {
 
   const handleAddToCart = () => {
     if (product) {
-      addToCart({
+      const existingItem = cartItems.find((item) => item.id === product.id);
+
+      if (existingItem) {
+        updateCartItemQuantity(product.id, existingItem.quantity + quantity);
+      } else {
+        addToCart({
+          id: product.id,
+          name: product.name,
+          price: product.price,
+          quantity,
+          imageUrl: product.imageUrl,
+        });
+      }
+
+      // クッキーにカートの状態を保存
+      Cookies.set('cartItems', JSON.stringify([...cartItems, {
         id: product.id,
         name: product.name,
         price: product.price,
         quantity,
-      });
+        imageUrl: product.imageUrl,
+      }]), { expires: 7 });
     }
   };
 
