@@ -1,0 +1,46 @@
+/* header.module.css */
+.header {
+  background-image: url('/header.png'); /* 画像のパスを指定 */
+  background-size: cover; /* 画像がヘッダー全体に収まるように */
+  background-position: center;
+  padding: 20px;
+}
+
+.banner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.title {
+  font-size: 2rem;
+  color: black;
+  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5); /* タイトルの視認性を向上させる */
+}
+
+.nav {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 20px;
+}
+
+.adminButton,
+.cartButton,
+.logoutButton,
+.loginButton {
+  background-color: #ffffff;
+  border: none;
+  border-radius: 50px;
+  padding: 10px 20px;
+  color: #007bff;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.adminButton:hover,
+.cartButton:hover,
+.logoutButton:hover,
+.loginButton:hover {
+  background-color: #007bff;
+  color: white;
+}

@@ -18,7 +18,7 @@ const subCategories: Record<string, string[]> = {
 };
 
 const Sidebar: React.FC<SidebarProps> = ({
-  selectedCategory,
+  // selectedCategory,
   setSelectedCategory,
   selectedManufacturer,
   setSelectedManufacturer

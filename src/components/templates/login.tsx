@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { auth } from '@/libs/firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import styles from '@/styles/pages/login.module.css'; // CSSモジュールのインポート
+import { useRouter } from 'next/router'; // useRouterのインポート
+import styles from '@/styles/pages/login.module.css';
 import ButtonComponent from '@/components/parts/button';
 import InputField from '@/components/parts/inputField';
 import { NextPage } from 'next';
@@ -12,13 +13,22 @@ interface LoginFormData {
   password: string;
 }
 
+
 const Login: NextPage = () => {
   const { register, handleSubmit, formState: { errors } } = useForm<LoginFormData>();
   const [errorMessage, setErrorMessage] = useState('');
+  const router = useRouter(); // useRouterの初期化
+  const { redirect } = router.query; // クエリパラメータからredirectを取得
 
   const onSubmit: SubmitHandler<LoginFormData> = async (data: LoginFormData) => {
     try {
       await signInWithEmailAndPassword(auth, data.email, data.password);
+      // ログイン後、redirectの値に応じてリダイレクト
+      if (redirect === 'checkout') {
+        router.push('/checkout'); // 決済ページへ
+      } else {
+        router.push('/products'); // 商品一覧ページへ
+      }
     } catch (error) {
       if (error instanceof Error) {
         setErrorMessage(error.message);

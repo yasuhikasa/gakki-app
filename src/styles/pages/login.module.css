@@ -1,8 +1,9 @@
 .container {
   display: flex;
   justify-content: center;
-  align-items: center;
-  height: 100vh;
+  align-items: flex-start; /* 画面上寄りにするために align-items を flex-start に変更 */
+  min-height: 100vh; /* 高さを100vhにして画面全体をカバー */
+  padding-top: 80px; /* ヘッダーの高さ分の余白を追加 */
   background-color: #f7f7f7;
 }
 
@@ -13,6 +14,7 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   width: 100%;
   max-width: 400px;
+  margin-top: 50px; /* 追加の上部余白を設定 */
 }
 
 .title {

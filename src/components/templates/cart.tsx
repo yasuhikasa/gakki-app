@@ -36,7 +36,7 @@ const CartPage = () => {
   // 注文確定（ログインしていない場合、ログインページにリダイレクト）
   const handleProceedToCheckout = () => {
     if (!user) {
-      router.push('/login'); // ログインページへリダイレクト
+      router.push('/login?redirect=checkout'); // ログインページへリダイレクト
     } else {
       router.push('/checkout'); // 決済ページへ遷移
     }
