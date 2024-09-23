@@ -1,50 +1,94 @@
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { useState } from 'react';
-import styles from '@/styles/pages/productDetail.module.css';
+import { doc, getDoc, collection, getDocs } from 'firebase/firestore';
+import { db } from '@/libs/firebase'; // Firestoreの設定
 import Button from '@/components/parts/button';
 import { useCart } from '@/context/cartContext';
-
-const productsData = [
-  { id: 1, name: 'Fender Stratocaster', price: 150000, manufacturer: 'Fender', category: 'guitar', releaseDate: '2023-01-01', imageUrl: '/images/fender-stratocaster.jpg' },
-  { id: 2, name: 'Gibson Les Paul', price: 200000, manufacturer: 'Gibson', category: 'guitar', releaseDate: '2023-02-15', imageUrl: '/images/gibson-les-paul.jpg' },
-  { id: 3, name: 'Ibanez RG', price: 120000, manufacturer: 'Ibanez', category: 'guitar', releaseDate: '2023-03-10', imageUrl: '/images/ibanez-rg.jpg' },
-  { id: 4, name: 'Fender Jazz Bass', price: 140000, manufacturer: 'Fender', category: 'bass', releaseDate: '2023-04-20', imageUrl: '/images/fender-jazz-bass.jpg' },
-  { id: 5, name: 'Pearl Drum Set', price: 250000, manufacturer: 'Pearl', category: 'drum', releaseDate: '2023-05-30', imageUrl: '/images/pearl-drum-set.jpg' },
-];
+import Sidebar from '@/components/parts/sidebar'; // サイドバーのインポート
+import styles from '@/styles/pages/productDetail.module.css';
+import Image from 'next/image';
 
 const ProductDetailPage = () => {
   const router = useRouter();
   const { id } = router.query;
-  const product = productsData.find((p) => p.id === Number(id));
-
   const { cartItems, addToCart } = useCart();
+  const [product, setProduct] = useState(null); // 商品データ
   const [quantity, setQuantity] = useState(1);
+  const [loading, setLoading] = useState(true); // ロード中フラグ
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null); // カテゴリ選択用
+  const [selectedManufacturer, setSelectedManufacturer] = useState<string | null>(null); // メーカー選択用
 
-  if (!product) {
-    return <div>Product not found</div>;
-  }
+  // 商品の詳細情報を取得
+  useEffect(() => {
+    const fetchProduct = async () => {
+      if (id) {
+        try {
+          const productRef = doc(db, 'products', id as string);
+          const productSnapshot = await getDoc(productRef);
+          if (productSnapshot.exists()) {
+            setProduct(productSnapshot.data());
+          } else {
+            console.error('Product not found');
+          }
+        } catch (error) {
+          console.error('Error fetching product:', error);
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+    fetchProduct();
+  }, [id]);
 
   const handleAddToCart = () => {
-    addToCart({
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      quantity,
-    });
+    if (product) {
+      addToCart({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        quantity,
+      });
+    }
   };
 
   const handleGoToCart = () => {
     router.push('/cart');
   };
 
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!product) {
+    return <div>Product not found</div>;
+  }
+
   return (
     <div className={styles.container}>
-      <div className={styles.leftColumn}>
+      {/* サイドバー */}
+      <div className={styles.sidebar}>
+        <Sidebar
+          selectedCategory={selectedCategory}
+          setSelectedCategory={setSelectedCategory}
+          selectedManufacturer={selectedManufacturer}
+          setSelectedManufacturer={setSelectedManufacturer}
+        />
+      </div>
+
+      {/* 中央カラム（商品詳細） */}
+      <div className={styles.centerColumn}>
         <div className={styles.productDetail}>
           <h2 className={styles.title}>{product.name}</h2>
-          <img src={product.imageUrl} alt={product.name} className={styles.productImage} />
+          <Image
+            src={product.imageUrl}
+            alt={product.name}
+            width={500}
+            height={300}
+            className={styles.productImage}
+          />
           <p className={styles.price}>{product.price}円</p>
-          <p className={styles.manufacturer}>メーカー: {product.manufacturer}</p>
+          <p className={styles.manufacturer}>メーカー: {product.subCategory}</p>
+          <p className={styles.description}>{product.description}</p>
           <div className={styles.quantity}>
             <label htmlFor="quantity">個数:</label>
             <input
@@ -69,6 +113,7 @@ const ProductDetailPage = () => {
         </div>
       </div>
 
+      {/* 右カラム（カート） */}
       <div className={styles.rightColumn}>
         <h3 className={styles.cartTitle}>カートの中身</h3>
         {cartItems.length === 0 ? (
