@@ -115,7 +115,15 @@ const ProductDetailPage = () => {
           />
           <p className={styles.price}>{product.price}円</p>
           <p className={styles.manufacturer}>メーカー: {product.subCategory}</p>
-          <p className={styles.description}>{product.description}</p>
+          {/* 改行を反映して説明文を表示 */}
+          <p className={styles.description}>
+            {product.description.split('\n').map((line, index) => (
+              <React.Fragment key={index}>
+                {line}
+                <br />
+              </React.Fragment>
+            ))}
+          </p>
           <div className={styles.quantity}>
             <label htmlFor="quantity">個数:</label>
             <input
