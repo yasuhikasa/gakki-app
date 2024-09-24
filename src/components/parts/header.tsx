@@ -73,7 +73,10 @@ const Header = () => {
   };
 
   const goToProducts = () => {
-    router.push('/products'); // 商品一覧ページへ遷移
+    router.push({
+      pathname: '/products',
+      query: { reset: 'true' }, // resetフラグを追加して商品一覧に遷移
+    });
   };
 
   return (

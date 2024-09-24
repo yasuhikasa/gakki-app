@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '@/libs/firebase';
 import ProductCard from '@/components/parts/productCard';
@@ -17,12 +18,14 @@ interface Product {
 }
 
 const ProductsPage = () => {
+  const router = useRouter();
   // Product型の配列としてproductsを定義
   const [products, setProducts] = useState<Product[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);  // カテゴリ（例: ギター）用
   const [selectedManufacturer, setSelectedManufacturer] = useState<string | null>(null);  // メーカー（例: Fender）用
 
   useEffect(() => {
+    
     const fetchProducts = async () => {
       const productsCollection = await getDocs(collection(db, 'products'));
       const productList: Product[] = productsCollection.docs.map((doc) => {
@@ -33,6 +36,14 @@ const ProductsPage = () => {
     };
     fetchProducts();
   }, []);
+
+  useEffect(() => {
+    // クエリパラメータに `reset` がある場合はフィルタをクリアする
+    if (router.query.reset) {
+      setSelectedCategory(null);
+      setSelectedManufacturer(null);
+    }
+  }, [router.query]);
 
   // カテゴリとメーカーでフィルタリング
   const filteredProducts = products.filter((product) => {
