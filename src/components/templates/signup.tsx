@@ -55,6 +55,13 @@ const Signup: NextPage = () => {
         email: data.email,
         role: 0,
         createdAt: new Date(),
+        shippingAddress: {
+          postalCode: data.postalCode,
+          prefecture: data.prefecture,
+          city: data.city,
+          addressLine: data.addressLine,
+          phoneNumber: data.phoneNumber,
+        },
       });
 
       // サインアップ後、商品一覧ページへ遷移
