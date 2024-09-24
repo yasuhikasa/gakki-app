@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { collection, getDocs, addDoc, doc, updateDoc, deleteDoc } from 'firebase/firestore';
+import { collection, getDocs, addDoc, doc, updateDoc, deleteDoc, query, orderBy } from 'firebase/firestore';
 import { useForm } from 'react-hook-form';
 import { db, storage } from '@/libs/firebase';
 import InputField from '@/components/parts/inputField';
@@ -16,7 +16,9 @@ interface Product {
   category: string;
   subCategory: string;
   imageUrl: string;
-  description: string; // 商品説明フィールドを追加
+  description: string;
+  createdAt: Date; // 商品登録日時
+  updatedAt?: Date; // 商品更新日時
 }
 
 const ProductManagement: React.FC = () => {
@@ -30,6 +32,8 @@ const ProductManagement: React.FC = () => {
     subCategory: '',
     imageUrl: '',
     description: '',
+    createdAt: new Date(), // 商品登録日時
+    updatedAt: undefined, // 商品更新日時
   });
   const [editingProductId, setEditingProductId] = useState<string | null>(null);
   const [updatedProduct, setUpdatedProduct] = useState<Partial<Product>>({});
@@ -44,17 +48,14 @@ const ProductManagement: React.FC = () => {
 
   useEffect(() => {
     const fetchProducts = async () => {
-      const productsCollection = await getDocs(collection(db, 'products'));
+      const productsQuery = query(collection(db, 'products'), orderBy('createdAt', 'desc'));
+      const productsCollection = await getDocs(productsQuery);
       const productList: Product[] = productsCollection.docs.map((doc) => ({
         id: doc.id,
-        name: doc.data().name,
-        price: doc.data().price,
-        stock: doc.data().stock,
-        category: doc.data().category,
-        subCategory: doc.data().subCategory,
-        imageUrl: doc.data().imageUrl,
-        description: doc.data().description,
-      }));
+        ...doc.data(),
+        createdAt: doc.data().createdAt.toDate(),
+        updatedAt: doc.data().updatedAt ? doc.data().updatedAt.toDate() : undefined,
+      })) as Product[];
       setProducts(productList);
     };
     fetchProducts();
@@ -74,10 +75,12 @@ const ProductManagement: React.FC = () => {
       alert('すべての項目を正しく入力してください');
       return;
     }
-    const addedProductRef = await addDoc(collection(db, 'products'), newProduct);
-    const addedProduct: Product = { ...newProduct, id: addedProductRef.id };
-    setProducts([...products, addedProduct]);
-    setNewProduct({ name: '', price: 0, stock: 0, category: '', subCategory: '', imageUrl: '', description: '' });
+
+    const productWithTimestamp = { ...newProduct, createdAt: new Date(), updatedAt: new Date() }; // 登録日時と更新日時を追加
+    const addedProductRef = await addDoc(collection(db, 'products'), productWithTimestamp);
+    const addedProduct: Product = { ...productWithTimestamp, id: addedProductRef.id };
+    setProducts([addedProduct, ...products]); // 新しい商品を上に追加
+    setNewProduct({ name: '', price: 0, stock: 0, category: '', subCategory: '', imageUrl: '', description: '', createdAt: new Date(), updatedAt: undefined });
   };
 
   // 商品の編集を開始
@@ -86,15 +89,24 @@ const ProductManagement: React.FC = () => {
     setUpdatedProduct({ ...product });
   };
 
+  // 編集商品のフィールド変更を処理する
+  const handleUpdatedProductChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setUpdatedProduct((prev) => ({
+      ...prev,
+      [name]: name === 'price' || name === 'stock' ? Number(value) : value,
+    }));
+  };
+
   // 編集された商品を保存
   const saveEditedProduct = async () => {
     if (editingProductId && updatedProduct.name && updatedProduct.price !== undefined) {
       const productRef = doc(db, 'products', editingProductId);
-      await updateDoc(productRef, updatedProduct);
+      await updateDoc(productRef, { ...updatedProduct, updatedAt: new Date() }); // 更新日時を追加
 
       setProducts((prevProducts) =>
         prevProducts.map((product) =>
-          product.id === editingProductId ? { ...product, ...updatedProduct } : product
+          product.id === editingProductId ? { ...product, ...updatedProduct, updatedAt: new Date() } : product
         )
       );
       setEditingProductId(null);
@@ -136,15 +148,6 @@ const ProductManagement: React.FC = () => {
   const handleNewProductChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setNewProduct((prev) => ({
-      ...prev,
-      [name]: name === 'price' || name === 'stock' ? Number(value) : value,
-    }));
-  };
-
-  // 編集商品のフィールド変更を処理する
-  const handleUpdatedProductChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setUpdatedProduct((prev) => ({
       ...prev,
       [name]: name === 'price' || name === 'stock' ? Number(value) : value,
     }));
@@ -271,7 +274,7 @@ const ProductManagement: React.FC = () => {
               </div>
             ) : (
               <div>
-                {product.name} - {product.price}円 - 在庫: {product.stock}
+                {product.name} - {product.price}円 - 在庫: {product.stock} - 登録日時: {product.createdAt.toLocaleString()} - {product.updatedAt ? `更新日時: ${product.updatedAt.toLocaleString()}` : ''}
                 <Button label="編集" onClick={() => startEditingProduct(product)} width="100%" />
                 <Button label="削除" onClick={() => deleteProduct(product.id)} width="100%" />
               </div>

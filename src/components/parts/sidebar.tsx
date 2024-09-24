@@ -18,7 +18,7 @@ const subCategories: Record<string, string[]> = {
 };
 
 const Sidebar: React.FC<SidebarProps> = ({
-  // selectedCategory,
+  selectedCategory,
   setSelectedCategory,
   selectedManufacturer,
   setSelectedManufacturer
@@ -26,19 +26,26 @@ const Sidebar: React.FC<SidebarProps> = ({
   const router = useRouter();
   const [openCategory, setOpenCategory] = useState<string | null>(null);
 
+  // 楽器の種類（カテゴリ）をクリックしたときは選択のみ
   const toggleCategory = (category: string) => {
     if (openCategory === category) {
       setOpenCategory(null);
     } else {
       setOpenCategory(category);
     }
-    setSelectedCategory(category);
-    setSelectedManufacturer(null); 
+    setSelectedCategory(category); // カテゴリのみ設定（絞り込みは行わない）
+    setSelectedManufacturer(null);
   };
 
+  // メーカーをクリックしたときに商品一覧を絞り込み
   const handleManufacturerClick = (manufacturer: string) => {
     setSelectedManufacturer(manufacturer);
-    router.push(`/products?manufacturer=${manufacturer}`); // メーカー選択で商品一覧ページに遷移
+
+    // カテゴリとメーカーをクエリパラメータに渡して商品を絞り込み
+    router.push({
+      pathname: '/products',
+      query: { category: selectedCategory, manufacturer },
+    });
   };
 
   return (
@@ -72,3 +79,4 @@ const Sidebar: React.FC<SidebarProps> = ({
 };
 
 export default Sidebar;
+

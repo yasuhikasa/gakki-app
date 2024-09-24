@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import { db } from '@/libs/firebase';
 import ProductCard from '@/components/parts/productCard';
 import Sidebar from '@/components/parts/sidebar';
@@ -15,6 +15,7 @@ interface Product {
   imageUrl: string;
   category: string;
   subCategory: string;
+  createdAt: Date;
 }
 
 const ProductsPage = () => {
@@ -25,13 +26,14 @@ const ProductsPage = () => {
   const [selectedManufacturer, setSelectedManufacturer] = useState<string | null>(null);  // メーカー（例: Fender）用
 
   useEffect(() => {
-    
     const fetchProducts = async () => {
-      const productsCollection = await getDocs(collection(db, 'products'));
-      const productList: Product[] = productsCollection.docs.map((doc) => {
-        const data = doc.data() as Omit<Product, 'id'>;
-        return { id: doc.id, ...data };
-      });
+      const productsQuery = query(collection(db, 'products'), orderBy('createdAt', 'desc')); // createdAtで並び替え
+      const productsCollection = await getDocs(productsQuery);
+      const productList: Product[] = productsCollection.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+        createdAt: doc.data().createdAt.toDate(), // FirestoreのTimestampをDate型に変換
+      })) as Product[];
       setProducts(productList);
     };
     fetchProducts();
@@ -49,8 +51,6 @@ const ProductsPage = () => {
   const filteredProducts = products.filter((product) => {
     if (selectedCategory && selectedManufacturer) {
       return product.category === selectedCategory && product.subCategory === selectedManufacturer;
-    } else if (selectedCategory) {
-      return product.category === selectedCategory;
     } else if (selectedManufacturer) {
       return product.subCategory === selectedManufacturer;
     }
