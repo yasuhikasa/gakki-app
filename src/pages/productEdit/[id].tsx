@@ -17,7 +17,6 @@ const ProductEditPage: NextPage = () => {
 
   return (
     <div>
-      <h1>商品編集ページ</h1>
       {/* 商品IDがある場合にフォームを表示 */}
       {typeof id === 'string' && <ProductEditForm productId={id} onSave={handleSave} />}
     </div>

@@ -1,4 +1,4 @@
-.container1 {
+.container {
   max-width: 800px;
   margin: 0 auto;
   padding: 20px;
@@ -14,20 +14,20 @@
   text-align: center;
 }
 
-.form1 {
+.form {
   display: flex;
   flex-direction: column;
   gap: 15px;
 }
 
-.input1 {
+.input {
   padding: 10px;
   border: 1px solid #ddd;
   border-radius: 5px;
   width: 100%;
 }
 
-.textarea1 {
+.textarea {
   resize: vertical;
   min-height: 100px;
   padding: 10px;
@@ -35,13 +35,13 @@
   border-radius: 5px;
 }
 
-.img1 {
+.img {
   margin-top: 10px;
   max-width: 100px;
   border-radius: 5px;
 }
 
-.label1 {
+.label {
   font-weight: bold;
   margin-bottom: 5px;
 }

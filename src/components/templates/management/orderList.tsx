@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { collection, getDocs, updateDoc, query, where, orderBy, doc } from 'firebase/firestore';
+import { collection, getDocs, updateDoc, query, orderBy, doc } from 'firebase/firestore';
 import { db } from '@/libs/firebase';
 import styles from '@/styles/pages/orderList.module.css';
 import Button from '@/components/parts/button';
+import { useRouter } from 'next/router';
+import { useAuth } from '@/context/authContext';
+import { NextPage } from 'next';
+import { getDoc } from 'firebase/firestore';
 
 interface Order {
   id: string;
   userId: string;
-  items: { productId: string; name: string; quantity: number; price: number }[];
+  cartItems: { id: string; name: string; quantity: number; price: number }[]; // 'cartItems' に対応するように修正
   totalAmount: number;
   status: string;
   createdAt: Date;
@@ -20,8 +24,39 @@ interface Order {
   };
 }
 
-const OrderList: React.FC = () => {
+const OrderList: NextPage = () => {
   const [orders, setOrders] = useState<Order[]>([]);
+  const [role, setRole] = useState<number | null>(null);
+  const { user } = useAuth();
+  const router = useRouter();
+
+  // 管理者権限をチェック
+  useEffect(() => {
+    const fetchUserRole = async () => {
+      if (user) {
+        try {
+          const userDocRef = doc(db, 'users', user.uid);
+          const userDocSnapshot = await getDoc(userDocRef);
+
+          if (userDocSnapshot.exists()) {
+            const userData = userDocSnapshot.data();
+            setRole(userData.role);
+          }
+        } catch (error) {
+          console.error('Error fetching user role:', error);
+        }
+      }
+    };
+
+    fetchUserRole();
+  }, [user]);
+
+  // roleが1でない場合にリダイレクト
+  useEffect(() => {
+    if (role !== null && role !== 1) {
+      router.push('/');
+    }
+  }, [role, router]);
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -46,6 +81,11 @@ const OrderList: React.FC = () => {
     );
   };
 
+  // roleがnullの場合は読み込み中表示
+  if (role === null) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <div className={styles.container}>
       <h2>注文管理</h2>
@@ -65,8 +105,8 @@ const OrderList: React.FC = () => {
             <tr key={order.id}>
               <td>{order.id}</td>
               <td>
-                {order.items && order.items.length > 0 ? (
-                  order.items.map((item, index) => (
+                {order.cartItems && order.cartItems.length > 0 ? (
+                  order.cartItems.map((item, index) => (
                     <div key={index}>
                       {item.name} - {item.quantity}個 - {item.price}円
                     </div>
@@ -83,19 +123,19 @@ const OrderList: React.FC = () => {
                   <Button
                     label="発送済み"
                     onClick={() => updateOrderStatus(order.id, '発送済み')}
-                    disabled={order.status === 'shipped'}
+                    disabled={order.status === '発送済み'}
                     width="80%"
                   />
                   <Button
                     label="キャンセル"
                     onClick={() => updateOrderStatus(order.id, 'キャンセル')}
-                    disabled={order.status === 'canceled'}
+                    disabled={order.status === 'キャンセル'}
                     width="80%"
                   />
                   <Button
                     label="未記入"
                     onClick={() => updateOrderStatus(order.id, '')}
-                    disabled={order.status === 'canceled'}
+                    disabled={order.status === ''}
                     width="80%"
                   />
                 </div>
@@ -103,7 +143,6 @@ const OrderList: React.FC = () => {
             </tr>
           ))}
         </tbody>
-
       </table>
     </div>
   );

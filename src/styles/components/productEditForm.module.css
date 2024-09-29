@@ -26,26 +26,7 @@
 .image {
   max-width: 150px;
   max-height: 150px;
-  object-fit: contain; /* アスペクト比を保ちつつ、画像が収まるように調整 */
   margin-bottom: 20px;
-}
-
-.button {
-  display: inline-block;
-  width: 100%;
-  padding: 10px;
-  margin-top: 20px;
-  font-size: 16px;
-  color: white;
-  background-color: #1976d2;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  text-align: center;
-}
-
-.button:hover {
-  background-color: #1565c0;
 }
 
 .label {

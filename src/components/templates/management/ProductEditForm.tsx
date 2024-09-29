@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
+import { useAuth } from '@/context/authContext'; // ログイン情報を取得
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db, storage } from '@/libs/firebase';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
@@ -7,10 +9,10 @@ import Button from '@/components/parts/button';
 import Image from 'next/image';
 import Textarea from '@/components/parts/textareaField';
 import styles from '@/styles/components/productEditForm.module.css';
+import { NextPage } from 'next';
 
 interface ProductEditFormProps {
   productId: string;
-  onSave: () => void; // 保存後のコールバック
 }
 
 interface Product {
@@ -26,10 +28,40 @@ interface Product {
   updatedAt?: Date;
 }
 
-const ProductEditForm: React.FC<ProductEditFormProps> = ({ productId, onSave }) => {
+const ProductEditForm: NextPage<ProductEditFormProps> = ({ productId }) => {
+  const router = useRouter();
+  const { user } = useAuth();  // ログインユーザーを取得
+  const [role, setRole] = useState<number | null>(null);  // ユーザーのロールを管理する
   const [product, setProduct] = useState<Partial<Product>>({});
-  const [imageUrl, setImageUrl] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
 
+  // ユーザーの役割を取得して管理者か確認する
+  useEffect(() => {
+    const fetchUserRole = async () => {
+      if (user) {
+        try {
+          const userDocRef = doc(db, 'users', user.uid);
+          const userDocSnapshot = await getDoc(userDocRef);
+          if (userDocSnapshot.exists()) {
+            const userData = userDocSnapshot.data();
+            setRole(userData.role);  // ロールをセット
+          }
+        } catch (error) {
+          console.error('Error fetching user role:', error);
+        }
+      }
+    };
+    fetchUserRole();
+  }, [user]);
+
+  // ロールが管理者でない場合はトップページにリダイレクト
+  useEffect(() => {
+    if (role !== null && role !== 1) {
+      router.push('/');  // 管理者でない場合はトップページにリダイレクト
+    }
+  }, [role, router]);
+
+  // 商品データを取得
   useEffect(() => {
     if (productId) {
       const fetchProduct = async () => {
@@ -72,12 +104,16 @@ const ProductEditForm: React.FC<ProductEditFormProps> = ({ productId, onSave }) 
   };
 
   const saveProduct = async () => {
+    if (isSaving) return;  // 保存処理中の場合は二重実行を防ぐ
+
+    setIsSaving(true); // 保存開始
     if (productId) {
       const productRef = doc(db, 'products', productId);
       await updateDoc(productRef, { ...product, updatedAt: new Date() });
       alert('商品情報が更新されました');
-      onSave(); // 保存後のコールバック
     }
+    setIsSaving(false); // 保存完了
+    router.push("/productList")
   };
 
   return (
@@ -113,11 +149,11 @@ const ProductEditForm: React.FC<ProductEditFormProps> = ({ productId, onSave }) 
           />
           <label>商品画像</label>
           <input className={styles.input} type="file" onChange={handleImageUpload} />
-          {product.imageUrl && <Image className={styles.image} src={product.imageUrl} alt="商品画像" width={150} height={150} />}
+          {product.imageUrl && <Image className={styles.image} src={product.imageUrl} alt="商品画像" width={150} height={150} style={{ objectFit: 'contain' }} />}
           <Textarea
             label="商品説明"
             value={product.description || ''}
-            name="name"
+            name="description"
             onChange={handleProductChange}
             rows={4}
           />
