@@ -4,6 +4,7 @@ import { addDoc, collection } from 'firebase/firestore';
 import { db, storage } from '@/libs/firebase';
 import InputField from '@/components/parts/inputField';
 import Button from '@/components/parts/button';
+import Image from 'next/image';
 import Textarea from '@/components/parts/textareaField';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import styles from '@/styles/pages/productAdd.module.css';
@@ -136,7 +137,13 @@ const ProductAdd: React.FC = () => {
         />
         <label className={styles.label1}>商品画像</label>
         <input className={styles.input1} type="file" onChange={handleImageUpload} />
-        {newProduct.imageUrl && <img className={styles.img1} src={newProduct.imageUrl} alt="商品画像" />}
+        {newProduct.imageUrl && (<Image
+            className={styles.img1}
+            src={newProduct.imageUrl}
+            alt="商品画像"
+            width={100}
+            height={100}
+          />)}
         <Button label="商品追加" type="submit" width="100%" />
       </form>
     </div>
