@@ -4,8 +4,9 @@ import styles from '@/styles/components/inputField.module.css';
 
 interface InputFieldProps {
   label: string; // ラベル
-  register: UseFormRegisterReturn; // react-hook-formのregister関数を受け取る
+  register?: UseFormRegisterReturn; // react-hook-formのregister関数を受け取る
   error?: string; // エラーメッセージ
+  name: string; // name 属性を受け取る
   type?: string; // インプットのタイプ（デフォルトは'text'）
   width?: string; // 幅の指定（デフォルト: 100%）
   height?: string; // 高さの指定（デフォルト: 40px）
@@ -16,6 +17,7 @@ interface InputFieldProps {
 const InputField = ({
   label,
   register,
+  name,
   error,
   type = 'text',
   width = '100%',
@@ -38,10 +40,10 @@ const InputField = ({
         value={value} // 外部からの値を受け取る
         onChange={(e) => {
           if (onChange) onChange(e); // 外部からのonChangeを呼び出す
-          register.onChange(e); // react-hook-formのonChangeを呼び出す
+          if (register) register.onChange(e);  // react-hook-formのonChangeを呼び出す
         }}
-        name={register.name} // registerからnameを直接指定
-        ref={register.ref} // registerからrefを直接指定
+        name={register ? register.name : name} // registerがあれば使用、なければnameを使用
+        ref={register ? register.ref : undefined} // registerからrefを使用
         style={inputStyle}
       />
       {error && <p className={styles.error}>{error}</p>}

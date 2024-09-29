@@ -19,7 +19,7 @@ const ButtonComponent = ({
   label,
   onClick,
   type = 'submit',
-  fullWidth = true,
+  fullWidth = false,
   disabled = false,
   width = '100%', // デフォルトの幅は全幅
   height = '50px', // デフォルトの高さ

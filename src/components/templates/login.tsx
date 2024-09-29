@@ -49,6 +49,7 @@ const Login: NextPage = () => {
               register={register('email', { required: 'Email is required' })}
               error={errors.email?.message}
               type="email"
+              name="email"
             />
           </div>
 
@@ -58,6 +59,7 @@ const Login: NextPage = () => {
               register={register('password', { required: 'Password is required' })}
               error={errors.password?.message}
               type="password"
+              name="password"
             />
           </div>
 

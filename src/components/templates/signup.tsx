@@ -110,11 +110,13 @@ const Signup: NextPage = () => {
                 label="姓"
                 register={register('lastName', { required: '姓は必須です' })}
                 error={errors.lastName?.message}
+                name="firstName"
               />
               <InputField
                 label="名"
                 register={register('firstName', { required: '名は必須です' })}
                 error={errors.firstName?.message}
+                name="lastName"
               />
             </div>
           </div>
@@ -124,11 +126,13 @@ const Signup: NextPage = () => {
                 label="姓（フリガナ）"
                 register={register('furiganaLastName', { required: 'フリガナ（姓）は必須です' })}
                 error={errors.furiganaLastName?.message}
+                name="firstNameKana"
               />
               <InputField
                 label="名（フリガナ）"
                 register={register('furiganaFirstName', { required: 'フリガナ（名）は必須です' })}
                 error={errors.furiganaFirstName?.message}
+                name="lastNameKana"
               />
             </div>
           </div>
@@ -138,6 +142,7 @@ const Signup: NextPage = () => {
               register={register('email', { required: 'メールアドレスは必須です' })}
               error={errors.email?.message}
               type="email"
+              name="email"
             />
           </div>
           <div className={styles.formGroup}>
@@ -146,6 +151,7 @@ const Signup: NextPage = () => {
               register={register('password', { required: 'パスワードは必須です' })}
               error={errors.password?.message}
               type="password"
+              name="password"
             />
           </div>
           <div className={styles.formGroup}>
@@ -153,6 +159,7 @@ const Signup: NextPage = () => {
               label="郵便番号"
               register={register('postalCode', { required: '郵便番号は必須です' })}
               error={errors.postalCode?.message}
+              name="postalCode"
               onChange={(e) => handlePostalCodeChange(e)} // 郵便番号変更時に町名を自動入力
             />
           </div>
@@ -178,6 +185,7 @@ const Signup: NextPage = () => {
               register={register('city', { required: '町名は必須です' })}
               error={errors.city?.message}
               value={city} // 自動入力された町名
+              name="city"
               onChange={(e) => setCity(e.target.value)}
             />
           </div>
@@ -187,12 +195,14 @@ const Signup: NextPage = () => {
               register={register('addressLine', { required: '番地は必須です' })}
               error={errors.addressLine?.message}
               value={addressLine}
+              name="addressLine"
               onChange={(e) => setAddressLine(e.target.value)} // 番地以降の入力
             />
           </div>
           <div className={styles.formGroup}>
             <InputField
               label="電話番号"
+              name="phoneNumber"
               register={register('phoneNumber', { required: '電話番号は必須です' })}
               error={errors.phoneNumber?.message}
             />

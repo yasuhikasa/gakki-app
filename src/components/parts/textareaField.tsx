@@ -6,6 +6,7 @@ interface TextareaFieldProps {
   value: string;
   onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
   rows?: number;
+  name?: string;
 }
 
 const TextareaField: React.FC<TextareaFieldProps> = ({
@@ -13,6 +14,7 @@ const TextareaField: React.FC<TextareaFieldProps> = ({
   value,
   onChange,
   rows = 4,
+  name,
 }) => {
   return (
     <div className={styles.container}>
@@ -22,6 +24,7 @@ const TextareaField: React.FC<TextareaFieldProps> = ({
         value={value}
         onChange={onChange}
         rows={rows}
+        name={name}
       />
     </div>
   );

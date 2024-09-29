@@ -119,11 +119,13 @@ const EditProfile = () => {
               label="姓"
               register={register('lastName', { required: '姓は必須です' })}
               error={errors.lastName?.message as string | undefined}
+              name="lastName"
             />
             <InputField
               label="名"
               register={register('firstName', { required: '名は必須です' })}
               error={errors.firstName?.message as string | undefined}
+              name="firstName"
             />
             <InputField
               label="メールアドレス"
@@ -131,6 +133,7 @@ const EditProfile = () => {
               value={updatedEmail} // メールアドレスの状態を反映
               onChange={(e) => setUpdatedEmail(e.target.value)} // メールアドレスを更新
               error={errors.email?.message as string | undefined}
+              name="email" 
             />
 
             <h3>通常の住所</h3>
@@ -138,26 +141,31 @@ const EditProfile = () => {
               label="郵便番号"
               register={register('postalCode', { required: '郵便番号は必須です' })}
               error={errors.postalCode?.message as string | undefined}
+              name="postalCode"
             />
             <InputField
               label="都道府県"
               register={register('prefecture', { required: '都道府県は必須です' })}
               error={errors.prefecture?.message as string | undefined}
+              name="prefecture"
             />
             <InputField
               label="市区町村"
               register={register('city', { required: '市区町村は必須です' })}
               error={errors.city?.message as string | undefined}
+              name="city"
             />
             <InputField
               label="番地"
               register={register('addressLine', { required: '番地は必須です' })}
               error={errors.addressLine?.message as string | undefined}
+              name="addressLine"
             />
             <InputField
               label="電話番号"
               register={register('phoneNumber', { required: '電話番号は必須です' })}
               error={errors.phoneNumber?.message as string | undefined}
+              name="phoneNumber"
             />
 
             <h3>配送先住所</h3>
@@ -165,26 +173,31 @@ const EditProfile = () => {
               label="郵便番号"
               register={register('shippingPostalCode', { required: '郵便番号は必須です' })}
               error={errors.shippingPostalCode?.message as string | undefined}
+              name="shippingPostalCode"
             />
             <InputField
               label="都道府県"
               register={register('shippingPrefecture', { required: '都道府県は必須です' })}
               error={errors.shippingPrefecture?.message as string | undefined}
+              name="shippingPrefecture"
             />
             <InputField
               label="市区町村"
               register={register('shippingCity', { required: '市区町村は必須です' })}
               error={errors.shippingCity?.message as string | undefined}
+              name="shippingCity"
             />
             <InputField
               label="番地"
               register={register('shippingAddressLine', { required: '番地は必須です' })}
               error={errors.shippingAddressLine?.message as string | undefined}
+              name="shippingAddressLine"
             />
             <InputField
               label="電話番号"
               register={register('shippingPhoneNumber', { required: '電話番号は必須です' })}
               error={errors.shippingPhoneNumber?.message as string | undefined}
+              name="shippingPhoneNumber"
             />
 
             <Button label="保存" width="100%" />

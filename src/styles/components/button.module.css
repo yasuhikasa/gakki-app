@@ -1,5 +1,6 @@
 .button {
   padding: 10px 20px;
+  margin: 0 auto;
   border: none;
   cursor: pointer;
   font-size: 16px;
