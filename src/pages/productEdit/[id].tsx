@@ -2,6 +2,7 @@ import React from 'react';
 import { useRouter } from 'next/router';
 import ProductEditForm from '@/components/templates/management/productEditForm';
 import { NextPage } from 'next';
+import Layout from '@/components/layout/Layout';
 
 const ProductEditPage: NextPage = () => {
   const router = useRouter();
@@ -11,8 +12,10 @@ const ProductEditPage: NextPage = () => {
 
   return (
     <div>
-      {/* 商品IDがある場合にフォームを表示 */}
-      {typeof id === 'string' && <ProductEditForm productId={id} />}
+      <Layout>
+        {/* 商品IDがある場合にフォームを表示 */}
+        {typeof id === 'string' && <ProductEditForm productId={id} />}
+      </Layout>
     </div>
   );
 };

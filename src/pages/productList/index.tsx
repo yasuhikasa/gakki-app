@@ -1,11 +1,14 @@
 import React from 'react';
 import ProductList from '@/components/templates/management/productList';
 import { NextPage } from 'next';
+import Layout from '@/components/layout/Layout';
 
 const ProductListPage: NextPage = () => {
   return (
     <div>
-      <ProductList />
+      <Layout>
+        <ProductList />
+      </Layout>
     </div>
   );
 }

@@ -1,11 +1,14 @@
 import React from 'react';
 import ProductAdd from '@/components/templates/management/productAdd';
 import { NextPage } from 'next';
+import Layout from '@/components/layout/Layout';
 
 const ProductAddPage: NextPage = () => {
   return (
     <div>
-      <ProductAdd />
+      <Layout>
+        <ProductAdd />
+      </Layout>
     </div>
   );
 }
