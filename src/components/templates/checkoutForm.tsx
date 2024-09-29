@@ -120,6 +120,7 @@ const CheckoutForm = () => {
           })),
           totalAmount,
           address,
+          status: '',
           createdAt: new Date(),
         });
       } catch (error) {

@@ -1,5 +1,5 @@
 import React from 'react';
-import ProductList from '@/components/templates/management/ProductList';
+import ProductList from '@/components/templates/management/productList';
 import { NextPage } from 'next';
 
 const ProductListPage: NextPage = () => {

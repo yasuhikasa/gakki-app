@@ -1,6 +1,6 @@
 import React from 'react';
 import { useRouter } from 'next/router';
-import ProductEditForm from '@/components/templates/management/ProductEditForm';
+import ProductEditForm from '@/components/templates/management/productEditForm';
 import { NextPage } from 'next';
 
 const ProductEditPage: NextPage = () => {
