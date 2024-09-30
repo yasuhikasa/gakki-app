@@ -89,7 +89,7 @@ const Header = () => {
         <HeaderButton label="商品一覧" onClick={goToProducts} />
 
         {/* 管理者ボタン: Firestoreから取得したロールが1の場合に表示 */}
-        {role === 1 && (
+        {user && role === 1 && (
           <HeaderButton label="管理者ページ" onClick={goToAdminPage} />
         )}
         {/* マイページボタン: ログインしているユーザーにのみ表示 */}
