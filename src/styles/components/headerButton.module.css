@@ -1,3 +1,4 @@
+/* headerButton.module.css */
 .roundedButton {
   background-color: #007bff;
   color: white;
@@ -8,8 +9,28 @@
   cursor: pointer;
   transition: background-color 0.3s ease;
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+  width: auto; /* ボタンの幅を自動で調整 */
+  text-align: center; /* テキストを中央揃え */
 }
 
 .roundedButton:hover {
   background-color: #0056b3;
+}
+
+@media (max-width: 768px) {
+  .roundedButton {
+    background-color: #6a9fb5;
+    width: 100%; /* スマホ画面ではボタンを全幅に */
+    padding: 12px 20px; /* パディング調整 */
+    font-size: 1rem;
+    border-radius: 8px;
+    margin-bottom: 10px; /* ボタン間の余白を少し狭く */
+  }
+}
+
+@media (max-width: 480px) {
+  .roundedButton {
+    font-size: 0.9rem; /* フォントサイズを調整 */
+    padding: 8px 15px; /* 小さい画面用のパディングを設定 */
+  }
 }

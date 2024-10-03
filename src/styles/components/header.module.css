@@ -1,9 +1,9 @@
-/* header.module.css */
 .header {
   background-image: url('/header.png'); /* 画像のパスを指定 */
   background-size: cover; /* 画像がヘッダー全体に収まるように */
   background-position: center;
   padding: 20px;
+  text-align: center; /* 中央揃えに */
 }
 
 .banner {
@@ -16,12 +16,15 @@
   font-size: 2rem;
   color: black;
   text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5); /* タイトルの視認性を向上させる */
+  word-break: break-word; /* 長いタイトルが画面幅を超えた場合に折り返す */
+  white-space: nowrap; /* タイトルを一行に固定 */
 }
 
 .nav {
   display: flex;
   justify-content: space-around;
   margin-top: 20px;
+  flex-wrap: wrap; /* ボタンが横並びに収まらない場合、次の行に表示されるように */
 }
 
 .adminButton,
@@ -35,6 +38,8 @@
   color: #007bff;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  width: auto;
+  text-align: center;
 }
 
 .adminButton:hover,
@@ -43,4 +48,31 @@
 .loginButton:hover {
   background-color: #007bff;
   color: white;
+}
+
+@media (max-width: 768px) {
+  .title {
+    font-size: 1.5rem; /* 画面幅が狭い場合にフォントサイズを縮小 */
+    white-space: normal; /* タイトルを折り返して表示する */
+  }
+
+  .nav {
+    flex-direction: column; /* スマホではボタンを縦並びに */
+    align-items: center;
+  }
+
+  .adminButton,
+  .cartButton,
+  .logoutButton,
+  .loginButton {
+    width: 100%; /* ボタンの幅を100%にして、画面幅に合わせる */
+    margin-bottom: 10px; /* ボタン同士の間隔を追加 */
+  }
+}
+
+@media (max-width: 480px) {
+  .title {
+    font-size: 1.2rem; /* さらに小さな画面ではフォントサイズを小さく */
+  }
+
 }
