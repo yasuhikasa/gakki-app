@@ -1,33 +1,41 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { auth } from '@/libs/firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import { useRouter } from 'next/router'; // useRouterのインポート
+import { useRouter } from 'next/router';
 import styles from '@/styles/pages/login.module.css';
 import ButtonComponent from '@/components/parts/button';
 import InputField from '@/components/parts/inputField';
 import { NextPage } from 'next';
+import { useAuth } from '@/context/authContext'; // ログイン情報を取得
 
 interface LoginFormData {
   email: string;
   password: string;
 }
 
-
 const Login: NextPage = () => {
   const { register, handleSubmit, formState: { errors } } = useForm<LoginFormData>();
   const [errorMessage, setErrorMessage] = useState('');
-  const router = useRouter(); // useRouterの初期化
+  const router = useRouter();
   const { redirect } = router.query; // クエリパラメータからredirectを取得
+  const { user } = useAuth(); // ログインユーザーを取得
+
+  // すでにログインしている場合は / にリダイレクト
+  useEffect(() => {
+    if (user) {
+      router.push('/'); // ホームページにリダイレクト
+    }
+  }, []);
 
   const onSubmit: SubmitHandler<LoginFormData> = async (data: LoginFormData) => {
     try {
       await signInWithEmailAndPassword(auth, data.email, data.password);
-      // ログイン後、redirectの値に応じてリダイレクト
+      // リダイレクトが 'checkout' なら /checkout、その他は /products に遷移
       if (redirect === 'checkout') {
-        router.push('/checkout'); // 決済ページへ
+        router.push('/checkout');
       } else {
-        router.push('/products'); // 商品一覧ページへ
+        router.push('/products');
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -69,6 +77,14 @@ const Login: NextPage = () => {
             <ButtonComponent label="Login" width="100%" height="50px" />
           </div>
         </form>
+
+        {/* サインアップへのリンク */}
+        <p className={styles.signupText}>
+          サインアップがまだの場合はこちら→{' '}
+          <span className={styles.signupLink} onClick={() => router.push('/signup')}>
+            サインアップ
+          </span>
+        </p>
       </div>
     </div>
   );

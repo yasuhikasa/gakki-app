@@ -44,11 +44,14 @@ const Header = () => {
   }, [cartItems]);
 
   const handleLogout = async () => {
-    try {
-      await auth.signOut();
-      router.push('/products'); // ログアウト後に商品一覧ページへ遷移
-    } catch (error) {
-      console.error('Error during logout', error);
+    const confirmLogout = window.confirm('ログアウトしてもよろしいですか？');
+    if (confirmLogout) {
+      try {
+        await auth.signOut();
+        router.push('/products'); // ログアウト後に商品一覧ページへ遷移
+      } catch (error) {
+        console.error('Error during logout', error);
+      }
     }
   };
 

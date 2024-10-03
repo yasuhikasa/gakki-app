@@ -218,6 +218,13 @@ const Signup: NextPage = () => {
             <Button label="Sign Up" width="100%" height="50px" />
           </div>
         </form>
+        {/* ログインページへのリンク */}
+        <p className={styles.loginText}>
+          すでにアカウントをお持ちの場合は{' '}
+          <span className={styles.loginLink} onClick={() => router.push('/login')}>
+            ログイン
+          </span>
+        </p>
       </div>
     </div>
   );

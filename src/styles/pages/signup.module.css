@@ -62,3 +62,18 @@
 .buttonWrapper {
   margin-top: 20px;
 }
+
+.loginText {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.loginLink {
+  color: #1976d2;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.loginLink:hover {
+  color: #0d47a1;
+}

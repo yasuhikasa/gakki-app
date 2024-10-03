@@ -37,6 +37,23 @@
   margin-top: 20px;
 }
 
+.signupText {
+  margin-top: 20px;
+  font-size: 14px;
+  text-align: center;
+}
+
+.signupLink {
+  color: #1976d2; /* 青文字に設定 */
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.signupLink:hover {
+  color: #145a86; /* ホバー時に少し濃い青色に変更 */
+}
+
+
 @media (max-width: 768px) {
   .formWrapper {
     padding: 15px;
