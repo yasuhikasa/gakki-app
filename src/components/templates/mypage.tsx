@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/context/authContext';
-import { collection, query, where, getDocs } from 'firebase/firestore';
+import { collection, query, where, getDocs, orderBy } from 'firebase/firestore';
 import { db } from '@/libs/firebase';
 import styles from '@/styles/pages/mypage.module.css';
 import Button from '@/components/parts/button';
 import { useRouter } from 'next/router';
+import { NextPage } from 'next';
 
 interface CartItem {
   id: string;
@@ -20,7 +21,7 @@ interface Order {
   cartItems: CartItem[];
 }
 
-const MyPage = () => {
+const MyPage: NextPage = () => {
   const { user } = useAuth();
   const router = useRouter();
   const [orders, setOrders] = useState<Order[]>([]);
@@ -33,7 +34,7 @@ const MyPage = () => {
 
     const fetchOrders = async () => {
       const ordersCollection = collection(db, 'orders');
-      const ordersQuery = query(ordersCollection, where('userId', '==', user.uid));
+      const ordersQuery = query(ordersCollection, where('userId', '==', user.uid), orderBy('createdAt', 'desc'));
       const ordersSnapshot = await getDocs(ordersQuery);
 
       const fetchedOrders: Order[] = ordersSnapshot.docs.map((doc) => {
@@ -42,7 +43,7 @@ const MyPage = () => {
           id: doc.id,
           createdAt: data.createdAt.toDate(),
           totalAmount: data.totalAmount,
-          cartItems: data.cartItems, // cartItems に商品情報が入っている
+          cartItems: data.cartItems,
         } as Order;
       });
 

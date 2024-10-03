@@ -24,7 +24,6 @@ const ButtonComponent = ({
   width = '100%', // デフォルトの幅は全幅
   height = '50px', // デフォルトの高さ
   textColor = '#fff', // デフォルトテキストカラー
-  backgroundColor = '#1976d2', // デフォルト背景色
   borderRadius = '5px', // デフォルトの角丸
   fontSize = '16px', // デフォルトテキストサイズ
 }: ButtonComponentProps) => {
@@ -33,7 +32,6 @@ const ButtonComponent = ({
     width: fullWidth ? '100%' : width,
     height,
     color: textColor,
-    backgroundColor,
     borderRadius,
     fontSize,
     border: 'none',

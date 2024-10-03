@@ -1,4 +1,7 @@
 .button {
+  display: flex; /* 子要素をflexboxレイアウトに */
+  align-items: center; /* 垂直方向の中央揃え */
+  justify-content: center; /* 水平方向の中央揃え */
   padding: 10px 20px;
   margin: 0 auto;
   border: none;
@@ -7,13 +10,14 @@
   border-radius: 5px;
   background-color: #1976d2;
   transition: background-color 0.3s ease;
+  white-space: normal; /* テキストを折り返し可能にする */
+  word-wrap: break-word; /* 長い単語を強制的に折り返す */
+  text-align: center; /* テキストを中央揃えに */
+  overflow-wrap: break-word; /* テキストが長すぎる場合に折り返し */
+  height: auto; /* 高さを自動調整 */
 }
 
 .button:hover {
   background-color: #145a86; /* ホバー時の色 */
 }
 
-.button:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
-}
