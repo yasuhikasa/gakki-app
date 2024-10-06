@@ -2,17 +2,7 @@
   background-color: #f8f9fa;
   padding: 20px;
   border-radius: 8px;
-}
-
-.title {
-  font-size: 24px;
-  color: #333;
-  margin-bottom: 20px;
-  text-align: center;
-}
-
-.category {
-  margin-bottom: 15px;
+  width: 250px; /* デフォルトの幅 */
 }
 
 .categoryHeader {
@@ -25,15 +15,6 @@
   background-color: #e9ecef;
   border-radius: 4px;
   transition: background-color 0.3s ease;
-}
-
-.categoryHeader:hover {
-  background-color: #dae0e5;
-}
-
-.subCategory {
-  margin-top: 10px;
-  padding-left: 10px;
 }
 
 .subCategory button {
@@ -55,4 +36,10 @@
 
 .subCategory button.active {
   background-color: #004085;
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    display: none; /* レスポンシブ時は非表示 */
+  }
 }

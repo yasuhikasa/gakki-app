@@ -26,6 +26,7 @@ const ProductDetailPage = () => {
   const [product, setProduct] = useState<Product | null>(null); // 商品データ
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(true); // ロード中フラグ
+  const [showPopup, setShowPopup] = useState(false); // ポップアップ表示状態
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedManufacturer, setSelectedManufacturer] = useState<string | null>(null);
 
@@ -75,11 +76,11 @@ const ProductDetailPage = () => {
         quantity,
         imageUrl: product.imageUrl,
       }]), { expires: 7 });
-    }
-  };
 
-  const handleGoToCart = () => {
-    router.push('/cart');
+      // ポップアップ表示
+      setShowPopup(true);
+      setTimeout(() => setShowPopup(false), 1500); // 1.5秒後に非表示
+    }
   };
 
   if (loading) {
@@ -148,29 +149,12 @@ const ProductDetailPage = () => {
         </div>
       </div>
 
-      {/* 右カラム（カート） */}
-      <div className={styles.rightColumn}>
-        <h3 className={styles.cartTitle}>カートの中身</h3>
-        {cartItems.length === 0 ? (
-          <p>カートに商品がありません</p>
-        ) : (
-          <ul className={styles.cartList}>
-            {cartItems.map((item) => (
-              <li key={item.id} className={styles.cartItem}>
-                {item.name} - {item.quantity}個 - {item.price}円
-              </li>
-            ))}
-          </ul>
-        )}
-        <Button
-          label="カートに移動"
-          onClick={handleGoToCart}
-          width="100%"
-          height="50px"
-          backgroundColor="#28a745"
-          textColor="#fff"
-        />
-      </div>
+      {/* ポップアップ表示 */}
+      {showPopup && (
+        <div className={styles.popup}>
+          カートに追加しました！
+        </div>
+      )}
     </div>
   );
 };

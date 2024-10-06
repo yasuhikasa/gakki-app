@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '@/libs/firebase';
 import styles from '@/styles/components/sidebar.module.css';
 
 interface SidebarProps {
@@ -9,14 +11,6 @@ interface SidebarProps {
   setSelectedManufacturer: (manufacturer: string | null) => void;
 }
 
-const categories = ['ギター', 'ベース', 'ドラム'];
-
-const subCategories: Record<string, string[]> = {
-  ギター: ['Fender', 'Gibson', 'Ibanez'],
-  ベース: ['Fender', 'Music Man', 'Warwick'],
-  ドラム: ['Yamaha', 'Tama', 'Pearl'],
-};
-
 const Sidebar: React.FC<SidebarProps> = ({
   selectedCategory,
   setSelectedCategory,
@@ -24,24 +18,60 @@ const Sidebar: React.FC<SidebarProps> = ({
   setSelectedManufacturer
 }) => {
   const router = useRouter();
-  const [openCategory, setOpenCategory] = useState<string | null>(null);
+  const [categories, setCategories] = useState<string[]>([]); // カテゴリリスト
+  const [subCategories, setSubCategories] = useState<Record<string, string[]>>({}); // カテゴリごとのサブカテゴリリスト
+  const [openCategory, setOpenCategory] = useState<string | null>(null); // 開かれているカテゴリ
 
-  // 楽器の種類（カテゴリ）をクリックしたときは選択のみ
+  // Firestoreからカテゴリとサブカテゴリを動的に取得
+  useEffect(() => {
+    const fetchCategoriesAndSubCategories = async () => {
+      const productsSnapshot = await getDocs(collection(db, 'products'));
+      const categorySet = new Set<string>();
+      const subCategoryMap: Record<string, Set<string>> = {};
+
+      productsSnapshot.forEach((doc) => {
+        const product = doc.data();
+        const category = product.category;
+        const subCategory = product.subCategory;
+
+        // カテゴリをセットに追加
+        categorySet.add(category);
+
+        // サブカテゴリをカテゴリごとのマップに追加
+        if (!subCategoryMap[category]) {
+          subCategoryMap[category] = new Set<string>();
+        }
+        subCategoryMap[category].add(subCategory);
+      });
+
+      // カテゴリを配列に変換してセット
+      setCategories(Array.from(categorySet));
+
+      // サブカテゴリのセットを配列に変換してセット
+      const formattedSubCategories: Record<string, string[]> = {};
+      for (const [category, subCategorySet] of Object.entries(subCategoryMap)) {
+        formattedSubCategories[category] = Array.from(subCategorySet);
+      }
+      setSubCategories(formattedSubCategories);
+    };
+
+    fetchCategoriesAndSubCategories();
+  }, []);
+
+  // カテゴリの展開・折りたたみ
   const toggleCategory = (category: string) => {
     if (openCategory === category) {
       setOpenCategory(null);
     } else {
       setOpenCategory(category);
     }
-    setSelectedCategory(category); // カテゴリのみ設定（絞り込みは行わない）
-    setSelectedManufacturer(null);
+    setSelectedCategory(category); // カテゴリ選択
+    setSelectedManufacturer(null); // メーカー選択をリセット
   };
 
-  // メーカーをクリックしたときに商品一覧を絞り込み
+  // メーカー選択時の処理
   const handleManufacturerClick = (manufacturer: string) => {
     setSelectedManufacturer(manufacturer);
-
-    // カテゴリとメーカーをクエリパラメータに渡して商品を絞り込み
     router.push({
       pathname: '/products',
       query: { category: selectedCategory, manufacturer },
@@ -61,11 +91,11 @@ const Sidebar: React.FC<SidebarProps> = ({
           </h3>
           {openCategory === category && (
             <div className={styles.subCategory}>
-              {subCategories[category].map((manufacturer) => (
+              {subCategories[category]?.map((manufacturer) => (
                 <button
                   key={manufacturer}
                   className={selectedManufacturer === manufacturer ? styles.active : ''}
-                  onClick={() => handleManufacturerClick(manufacturer)} // メーカー選択時にページ遷移
+                  onClick={() => handleManufacturerClick(manufacturer)}
                 >
                   {manufacturer}
                 </button>
@@ -79,4 +109,3 @@ const Sidebar: React.FC<SidebarProps> = ({
 };
 
 export default Sidebar;
-
