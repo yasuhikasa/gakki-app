@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { FC, useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useAuth } from '@/context/authContext'; // ログイン情報を取得
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
@@ -9,7 +9,6 @@ import Button from '@/components/parts/button';
 import Image from 'next/image';
 import Textarea from '@/components/parts/textareaField';
 import styles from '@/styles/components/productEditForm.module.css';
-import { NextPage } from 'next';
 
 interface ProductEditFormProps {
   productId: string;
@@ -28,7 +27,7 @@ interface Product {
   updatedAt?: Date;
 }
 
-const ProductEditForm: NextPage<ProductEditFormProps> = ({ productId }) => {
+const ProductEditForm: FC<ProductEditFormProps> = ({ productId }) => {
   const router = useRouter();
   const { user } = useAuth(); // ログインユーザーを取得
   const [role, setRole] = useState<number | null>(null); // ユーザーのロールを管理する
