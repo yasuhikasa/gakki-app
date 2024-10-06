@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { useAuth } from '@/context/authContext'; // Auth context をインポート
-import { doc, getDoc } from 'firebase/firestore';
+import { useAuth } from '@/context/authContext';
+import { doc, getDoc, collection, getDocs } from 'firebase/firestore';
 import { db, storage } from '@/libs/firebase';
 import { useForm } from 'react-hook-form';
-import { addDoc, collection } from 'firebase/firestore';
+import { addDoc } from 'firebase/firestore';
 import InputField from '@/components/parts/inputField';
 import Button from '@/components/parts/button';
 import Image from 'next/image';
@@ -13,36 +13,18 @@ import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import styles from '@/styles/pages/productAdd.module.css';
 import { NextPage } from 'next';
 
+interface Category {
+  name: string;
+  subCategories: string[];
+}
+
 const ProductAdd: NextPage = () => {
   const router = useRouter();
-  const { user } = useAuth();  // ログインユーザーを取得
-  const [role, setRole] = useState<number | null>(null);  // ユーザーのロールを管理する
+  const { user } = useAuth();
+  const [role, setRole] = useState<number | null>(null);
   const { register, handleSubmit } = useForm();
 
-  useEffect(() => {
-    const fetchUserRole = async () => {
-      if (user) {
-        try {
-          const userDocRef = doc(db, 'users', user.uid);
-          const userDocSnapshot = await getDoc(userDocRef);
-          if (userDocSnapshot.exists()) {
-            const userData = userDocSnapshot.data();
-            setRole(userData.role);  // ロールをセット
-          }
-        } catch (error) {
-          console.error('Error fetching user role:', error);
-        }
-      }
-    };
-    fetchUserRole();
-  }, [user]);
-
-  useEffect(() => {
-    if (role !== null && role !== 1) {
-      router.push('/');  // 管理者でない場合はトップページにリダイレクト
-    }
-  }, [role, router]);
-
+  const [categories, setCategories] = useState<Category[]>([]);
   const [newProduct, setNewProduct] = useState({
     name: '',
     price: 0,
@@ -55,12 +37,49 @@ const ProductAdd: NextPage = () => {
     updatedAt: undefined,
   });
 
-  const categories = ['ギター', 'ベース', 'ドラム'] as const;
-  const subCategories = {
-    ギター: ['Fender', 'Gibson', 'Ibanez'],
-    ベース: ['Fender', 'Music Man', 'Warwick'],
-    ドラム: ['Yamaha', 'Tama', 'Pearl'],
-  } as const;
+  // ログインユーザーのロールを確認
+  useEffect(() => {
+    const fetchUserRole = async () => {
+      if (user) {
+        try {
+          const userDocRef = doc(db, 'users', user.uid);
+          const userDocSnapshot = await getDoc(userDocRef);
+          if (userDocSnapshot.exists()) {
+            const userData = userDocSnapshot.data();
+            setRole(userData.role);
+          }
+        } catch (error) {
+          console.error('Error fetching user role:', error);
+        }
+      }
+    };
+    fetchUserRole();
+  }, [user]);
+
+  // カテゴリとサブカテゴリをFirestoreから取得
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const categoriesSnapshot = await getDocs(collection(db, 'categories'));
+        const categoriesList: Category[] = categoriesSnapshot.docs.map((doc) => {
+          const data = doc.data();
+          const subCategories = data["メーカー"]; // フィールド名 "メーカー" に対応する配列
+          return { name: doc.id, subCategories: subCategories as string[] };
+        });
+        setCategories(categoriesList);
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
+    fetchCategories();
+  }, []);
+
+  // 管理者以外はアクセス不可
+  useEffect(() => {
+    if (role !== null && role !== 1) {
+      router.push('/');
+    }
+  }, [role, router]);
 
   // 商品の追加
   const addProduct = async () => {
@@ -143,8 +162,8 @@ const ProductAdd: NextPage = () => {
         <select className={styles.input} name="category" value={newProduct.category} onChange={handleNewProductChange}>
           <option value="">選択してください</option>
           {categories.map((category) => (
-            <option key={category} value={category}>
-              {category}
+            <option key={category.name} value={category.name}>
+              {category.name}
             </option>
           ))}
         </select>
@@ -153,11 +172,12 @@ const ProductAdd: NextPage = () => {
             <label className={styles.label}>サブカテゴリ</label>
             <select className={styles.input} name="subCategory" value={newProduct.subCategory} onChange={handleNewProductChange}>
               <option value="">選択してください</option>
-              {subCategories[newProduct.category as keyof typeof subCategories].map((subCategory) => (
-                <option key={subCategory} value={subCategory}>
-                  {subCategory}
-                </option>
-              ))}
+              {categories
+                .find((cat) => cat.name === newProduct.category)?.subCategories.map((subCategory) => (
+                  <option key={subCategory} value={subCategory}>
+                    {subCategory}
+                  </option>
+                ))}
             </select>
           </>
         )}
