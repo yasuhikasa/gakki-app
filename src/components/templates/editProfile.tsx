@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/context/authContext';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
-import { auth, db } from '@/libs/firebase';
+import { db } from '@/libs/firebase';
 import { updateEmail } from 'firebase/auth'; // メールアドレスの更新
-import { useForm } from 'react-hook-form';
+import { useForm, SubmitHandler } from 'react-hook-form';
 import InputField from '@/components/parts/inputField';
 import Button from '@/components/parts/button';
 import styles from '@/styles/pages/editProfile.module.css';
@@ -18,7 +18,12 @@ interface UserProfile {
   city: string;
   addressLine: string;
   phoneNumber: string;
-  shippingAddress: {
+  shippingPostalCode?: string;
+  shippingPrefecture?: string;
+  shippingCity?: string;
+  shippingAddressLine?: string;
+  shippingPhoneNumber?: string;
+  shippingAddress?: {
     postalCode: string;
     prefecture: string;
     city: string;
@@ -31,7 +36,7 @@ const EditProfile = () => {
   const { user } = useAuth();
   const router = useRouter();
   const [profile, setProfile] = useState<UserProfile | null>(null);
-  const { register, handleSubmit, setValue, formState: { errors } } = useForm();
+  const { register, handleSubmit, setValue, formState: { errors } } = useForm<UserProfile>();
   const [updatedEmail, setUpdatedEmail] = useState(''); // メールアドレスの更新用
 
   useEffect(() => {
@@ -76,7 +81,7 @@ const EditProfile = () => {
     fetchUserProfile();
   }, [user, setValue]);
 
-  const handleAddressUpdate = async (data: any) => {
+  const handleAddressUpdate: SubmitHandler<UserProfile> = async (data: UserProfile) => {
     if (user) {
       try {
         // Firebase Authentication のメールアドレスを更新

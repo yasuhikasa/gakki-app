@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/libs/firebase'; // Firestore設定
 import styles from '@/styles/pages/confirm.module.css';
@@ -19,11 +18,12 @@ interface Order {
     quantity: number;
   }>;
   totalAmount: number;
-  createdAt: any;
+  createdAt: {
+    toDate: () => Date;
+  };
 }
 
 const ConfirmationPage = () => {
-  const router = useRouter();
   const [order, setOrder] = useState<Order | null>(null); // 注文情報の状態
   const orderId = 'dtaS5X5h9SJiv5S0wDGz'; // 注文IDをハードコード（例）で指定
 
