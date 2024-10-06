@@ -56,7 +56,7 @@ const CheckoutForm = () => {
     if (!stripe || !elements) return;
 
     // 注文確定前に確認アラートを表示
-    const confirmPayment = window.confirm("本当に注文を確定しますか？");
+    const confirmPayment = window.confirm('本当に注文を確定しますか？');
     if (!confirmPayment) {
       return; // ユーザーがキャンセルを選択した場合、処理を中止
     }
@@ -112,7 +112,7 @@ const CheckoutForm = () => {
       try {
         await addDoc(collection(db, 'orders'), {
           userId: user.uid,
-          cartItems: cartItems.map(item => ({
+          cartItems: cartItems.map((item) => ({
             id: item.id,
             name: item.name,
             price: item.price,
@@ -134,13 +134,18 @@ const CheckoutForm = () => {
       <h3>クレジットカードで支払う</h3>
       <p className={styles.totalAmount}>合計金額: {totalAmount}円</p>
       <div className={styles.address}>
-        <p>配送先:〒{address.postalCode} {address.prefecture} {address.city} {address.addressLine}</p>
+        <p>
+          配送先:〒{address.postalCode} {address.prefecture} {address.city}{' '}
+          {address.addressLine}
+        </p>
       </div>
       <div className={styles.cardElementWrapper}>
         <CardElement className={styles.cardElement} />
       </div>
       {errorMessage && <p className={styles.errorMessage}>{errorMessage}</p>}
-      {paymentSucceeded && <p className={styles.successMessage}>支払いが成功しました！</p>}
+      {paymentSucceeded && (
+        <p className={styles.successMessage}>支払いが成功しました！</p>
+      )}
       <ButtonComponent
         label={isProcessing ? '処理中...' : '支払いを確定'}
         width="100%"

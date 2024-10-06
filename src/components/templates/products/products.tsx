@@ -23,12 +23,17 @@ const ProductsPage = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<string[]>([]); // カテゴリのリスト
   const [manufacturers, setManufacturers] = useState<string[]>([]); // メーカーのリスト
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);  // カテゴリ選択
-  const [selectedManufacturer, setSelectedManufacturer] = useState<string | null>(null);  // メーカー選択
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null); // カテゴリ選択
+  const [selectedManufacturer, setSelectedManufacturer] = useState<
+    string | null
+  >(null); // メーカー選択
 
   useEffect(() => {
     const fetchProducts = async () => {
-      const productsQuery = query(collection(db, 'products'), orderBy('createdAt', 'desc'));
+      const productsQuery = query(
+        collection(db, 'products'),
+        orderBy('createdAt', 'desc')
+      );
       const productsCollection = await getDocs(productsQuery);
       const productList: Product[] = productsCollection.docs.map((doc) => ({
         id: doc.id,
@@ -64,7 +69,10 @@ const ProductsPage = () => {
   // フィルタリングロジック
   const filteredProducts = products.filter((product) => {
     if (selectedCategory && selectedManufacturer) {
-      return product.category === selectedCategory && product.subCategory === selectedManufacturer;
+      return (
+        product.category === selectedCategory &&
+        product.subCategory === selectedManufacturer
+      );
     } else if (selectedManufacturer) {
       return product.subCategory === selectedManufacturer;
     }
@@ -79,61 +87,70 @@ const ProductsPage = () => {
   };
 
   // セレクトボックスでのメーカー変更
-  const handleManufacturerChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleManufacturerChange = (
+    e: React.ChangeEvent<HTMLSelectElement>
+  ) => {
     const selected = e.target.value;
     setSelectedManufacturer(selected === '' ? null : selected);
   };
 
   return (
     <>
-    <div className={styles.selectContainer}>
-  {/* レスポンシブ時のみ表示 */}
-  <select className={styles.select} value={selectedCategory || ''} onChange={handleCategoryChange}>
-    <option value="">カテゴリを選択</option>
-    {categories.map((category) => (
-      <option key={category} value={category}>
-        {category}
-      </option>
-    ))}
-  </select>
+      <div className={styles.selectContainer}>
+        {/* レスポンシブ時のみ表示 */}
+        <select
+          className={styles.select}
+          value={selectedCategory || ''}
+          onChange={handleCategoryChange}
+        >
+          <option value="">カテゴリを選択</option>
+          {categories.map((category) => (
+            <option key={category} value={category}>
+              {category}
+            </option>
+          ))}
+        </select>
 
-  {selectedCategory && (
-    <select className={styles.select} value={selectedManufacturer || ''} onChange={handleManufacturerChange}>
-      <option value="">メーカーを選択</option>
-      {manufacturers.map((manufacturer) => (
-        <option key={manufacturer} value={manufacturer}>
-          {manufacturer}
-        </option>
-      ))}
-    </select>
-  )}
-</div>
-
-<div className={styles.container}>
-      {/* PC表示ではサイドバーを表示 */}
-      <Sidebar
-        selectedCategory={selectedCategory}
-        setSelectedCategory={setSelectedCategory}
-        selectedManufacturer={selectedManufacturer}
-        setSelectedManufacturer={setSelectedManufacturer}
-      />
-
-      <div className={styles.productGrid}>
-        {filteredProducts.map((product) => (
-          <ProductCard
-            key={product.id}
-            id={product.id}
-            name={product.name}
-            price={product.price}
-            manufacturer={product.subCategory}
-            imageUrl={product.imageUrl}
-          />
-        ))}
+        {selectedCategory && (
+          <select
+            className={styles.select}
+            value={selectedManufacturer || ''}
+            onChange={handleManufacturerChange}
+          >
+            <option value="">メーカーを選択</option>
+            {manufacturers.map((manufacturer) => (
+              <option key={manufacturer} value={manufacturer}>
+                {manufacturer}
+              </option>
+            ))}
+          </select>
+        )}
       </div>
-    </div>
+
+      <div className={styles.container}>
+        {/* PC表示ではサイドバーを表示 */}
+        <Sidebar
+          selectedCategory={selectedCategory}
+          setSelectedCategory={setSelectedCategory}
+          selectedManufacturer={selectedManufacturer}
+          setSelectedManufacturer={setSelectedManufacturer}
+        />
+
+        <div className={styles.productGrid}>
+          {filteredProducts.map((product) => (
+            <ProductCard
+              key={product.id}
+              id={product.id}
+              name={product.name}
+              price={product.price}
+              manufacturer={product.subCategory}
+              imageUrl={product.imageUrl}
+            />
+          ))}
+        </div>
+      </div>
     </>
   );
 };
 
 export default ProductsPage;
-

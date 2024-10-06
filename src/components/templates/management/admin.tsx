@@ -51,11 +51,12 @@ const AdminPage: NextPage = () => {
     router.push('/productList');
   };
 
-
   return (
     <div className={styles.container}>
       <h2 className={styles.title}>管理者ページ</h2>
-      <p className={styles.description}>管理者機能にアクセスするためのページです。</p>
+      <p className={styles.description}>
+        管理者機能にアクセスするためのページです。
+      </p>
 
       <div className={styles.buttonContainer}>
         <Button

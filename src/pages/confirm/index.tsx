@@ -9,6 +9,6 @@ const ConfirmPage: NextPage = () => {
       <Confirm />
     </Layout>
   );
-}
+};
 
 export default ConfirmPage;

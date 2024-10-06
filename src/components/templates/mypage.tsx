@@ -34,7 +34,11 @@ const MyPage: NextPage = () => {
 
     const fetchOrders = async () => {
       const ordersCollection = collection(db, 'orders');
-      const ordersQuery = query(ordersCollection, where('userId', '==', user.uid), orderBy('createdAt', 'desc'));
+      const ordersQuery = query(
+        ordersCollection,
+        where('userId', '==', user.uid),
+        orderBy('createdAt', 'desc')
+      );
       const ordersSnapshot = await getDocs(ordersQuery);
 
       const fetchedOrders: Order[] = ordersSnapshot.docs.map((doc) => {
@@ -68,7 +72,8 @@ const MyPage: NextPage = () => {
               <ul>
                 {order.cartItems.map((item, index) => (
                   <li key={index}>
-                    <strong>{item.name}</strong> - {item.quantity}個 - {item.price}円
+                    <strong>{item.name}</strong> - {item.quantity}個 -{' '}
+                    {item.price}円
                   </li>
                 ))}
               </ul>
@@ -76,7 +81,11 @@ const MyPage: NextPage = () => {
           ))}
         </ul>
       )}
-      <Button label="ユーザー情報を編集" onClick={() => router.push('/editProfile')} width="100%" />
+      <Button
+        label="ユーザー情報を編集"
+        onClick={() => router.push('/editProfile')}
+        width="100%"
+      />
     </div>
   );
 };

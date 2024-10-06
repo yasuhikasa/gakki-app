@@ -11,6 +11,6 @@ const ProductAddPage: NextPage = () => {
       </Layout>
     </div>
   );
-}
+};
 
 export default ProductAddPage;

@@ -9,6 +9,6 @@ const AdminPage: NextPage = () => {
       <Admin />
     </Layout>
   );
-}
+};
 
 export default AdminPage;

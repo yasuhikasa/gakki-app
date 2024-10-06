@@ -19,7 +19,8 @@ const withAdminAuth = (WrappedComponent: ComponentType<WithAdminAuthProps>) => {
           const userDoc = await getDoc(doc(db, 'users', user.uid));
           if (userDoc.exists()) {
             const userData = userDoc.data();
-            if (userData.role !== 1) { // roleが1でなければリダイレクト
+            if (userData.role !== 1) {
+              // roleが1でなければリダイレクト
               router.push('/');
             }
           } else {
@@ -41,4 +42,3 @@ const withAdminAuth = (WrappedComponent: ComponentType<WithAdminAuthProps>) => {
 };
 
 export default withAdminAuth;
-

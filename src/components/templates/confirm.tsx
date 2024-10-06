@@ -51,7 +51,9 @@ const ConfirmationPage = () => {
   return (
     <div className={styles.container}>
       <h2 className={styles.heading}>決済が完了しました！</h2>
-      <p className={styles.paragraph}>ご注文が確定しました。ありがとうございます。</p>
+      <p className={styles.paragraph}>
+        ご注文が確定しました。ありがとうございます。
+      </p>
 
       {order ? (
         <div className={styles.confirmationDetails}>
@@ -65,16 +67,17 @@ const ConfirmationPage = () => {
               </li>
             ))}
           </ul>
-
           <h3 className={styles.subheading}>配送先</h3>
           <p>〒: {order.address.postalCode}</p>
-          <p>{order.address.prefecture} {order.address.city} {order.address.addressLine}</p>
-
+          <p>
+            {order.address.prefecture} {order.address.city}{' '}
+            {order.address.addressLine}
+          </p>
           <h3 className={styles.subheading}>合計金額</h3>
           <p className={styles.totalAmount}>{order.totalAmount}円</p>
-
           <h3 className={styles.subheading}>注文日時</h3>
-          <p>{order.createdAt.toDate().toLocaleString()}</p> {/* 日付をフォーマットして表示 */}
+          <p>{order.createdAt.toDate().toLocaleString()}</p>{' '}
+          {/* 日付をフォーマットして表示 */}
         </div>
       ) : (
         <p>注文情報が見つかりません</p>

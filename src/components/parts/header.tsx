@@ -85,7 +85,10 @@ const Header = () => {
   return (
     <header className={styles.header}>
       <div className={styles.banner}>
-        <h1 className={styles.title} onClick={goToHomePage}>楽器屋オンラインショップ</h1> {/* タイトルクリックでホームページへ遷移 */}
+        <h1 className={styles.title} onClick={goToHomePage}>
+          楽器屋オンラインショップ
+        </h1>{' '}
+        {/* タイトルクリックでホームページへ遷移 */}
       </div>
       <nav className={styles.nav}>
         {/* 商品一覧ボタン */}
@@ -96,9 +99,7 @@ const Header = () => {
           <HeaderButton label="管理者ページ" onClick={goToAdminPage} />
         )}
         {/* マイページボタン: ログインしているユーザーにのみ表示 */}
-        {user && (
-          <HeaderButton label="マイページ" onClick={goToMyPage} />
-        )}
+        {user && <HeaderButton label="マイページ" onClick={goToMyPage} />}
         {/* カートボタン */}
         <HeaderButton label={`カート (${cartItemCount})`} onClick={goToCart} />
         {/* ログイン/ログアウト */}

@@ -11,6 +11,6 @@ const ProductListPage: NextPage = () => {
       </Layout>
     </div>
   );
-}
+};
 
 export default ProductListPage;

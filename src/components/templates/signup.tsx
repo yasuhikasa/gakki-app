@@ -10,7 +10,7 @@ import InputField from '@/components/parts/inputField';
 import GenderField from '@/components/parts/genderField';
 import axios from 'axios';
 import { JUSHO_API_URLS } from '@/libs/def';
-import { prefectures } from '@/libs/def'
+import { prefectures } from '@/libs/def';
 import { NextPage } from 'next';
 
 interface SignupFormData {
@@ -29,16 +29,24 @@ interface SignupFormData {
 }
 
 const Signup: NextPage = () => {
-  const { register, handleSubmit, formState: { errors } } = useForm<SignupFormData>();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<SignupFormData>();
   const [errorMessage, setErrorMessage] = useState('');
-  const router = useRouter(); 
+  const router = useRouter();
   const [city, setCity] = useState(''); // 自動で入力される町名
   const [prefecture, setPrefecture] = useState(''); // 都道府県の値
   const [addressLine, setAddressLine] = useState(''); // 番地以降
 
   const onSubmit: SubmitHandler<SignupFormData> = async (data) => {
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        data.email,
+        data.password
+      );
       const user = userCredential.user;
 
       await setDoc(doc(db, 'users', user.uid), {
@@ -78,9 +86,12 @@ const Signup: NextPage = () => {
   };
 
   // 郵便番号から町名を自動取得する関数
-  const handlePostalCodeChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePostalCodeChange = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const postalCode = e.target.value;
-    if (postalCode.length === 7) { // 郵便番号が7桁であれば
+    if (postalCode.length === 7) {
+      // 郵便番号が7桁であれば
       try {
         const response = await axios.get(JUSHO_API_URLS(postalCode));
         if (response.data.results) {
@@ -92,7 +103,7 @@ const Signup: NextPage = () => {
           setPrefecture(''); // エラー時は都道府県もクリア
         }
       } catch (error) {
-        console.error("Failed to fetch city and prefecture:", error);
+        console.error('Failed to fetch city and prefecture:', error);
         setCity('');
         setPrefecture('');
       }
@@ -124,13 +135,17 @@ const Signup: NextPage = () => {
             <div className={styles.row}>
               <InputField
                 label="姓（フリガナ）"
-                register={register('furiganaLastName', { required: 'フリガナ（姓）は必須です' })}
+                register={register('furiganaLastName', {
+                  required: 'フリガナ（姓）は必須です',
+                })}
                 error={errors.furiganaLastName?.message}
                 name="firstNameKana"
               />
               <InputField
                 label="名（フリガナ）"
-                register={register('furiganaFirstName', { required: 'フリガナ（名）は必須です' })}
+                register={register('furiganaFirstName', {
+                  required: 'フリガナ（名）は必須です',
+                })}
                 error={errors.furiganaFirstName?.message}
                 name="lastNameKana"
               />
@@ -139,7 +154,9 @@ const Signup: NextPage = () => {
           <div className={styles.formGroup}>
             <InputField
               label="メールアドレス"
-              register={register('email', { required: 'メールアドレスは必須です' })}
+              register={register('email', {
+                required: 'メールアドレスは必須です',
+              })}
               error={errors.email?.message}
               type="email"
               name="email"
@@ -148,7 +165,9 @@ const Signup: NextPage = () => {
           <div className={styles.formGroup}>
             <InputField
               label="パスワード"
-              register={register('password', { required: 'パスワードは必須です' })}
+              register={register('password', {
+                required: 'パスワードは必須です',
+              })}
               error={errors.password?.message}
               type="password"
               name="password"
@@ -157,19 +176,22 @@ const Signup: NextPage = () => {
           <div className={styles.formGroup}>
             <InputField
               label="郵便番号"
-              register={register('postalCode', { required: '郵便番号は必須です' })}
+              register={register('postalCode', {
+                required: '郵便番号は必須です',
+              })}
               error={errors.postalCode?.message}
               name="postalCode"
               onChange={(e) => handlePostalCodeChange(e)} // 郵便番号変更時に町名を自動入力
             />
           </div>
           <div className={styles.formGroup}>
-          <label className={styles.label}>都道府県</label>
+            <label className={styles.label}>都道府県</label>
             <select
               className={styles.selectField}
               {...register('prefecture', { required: '都道府県は必須です' })}
               value={prefecture} // 自動入力された都道府県
-              onChange={(e) => setPrefecture(e.target.value)}>
+              onChange={(e) => setPrefecture(e.target.value)}
+            >
               <option value="">選択してください</option>
               {prefectures.map((prefecture) => (
                 <option key={prefecture} value={prefecture}>
@@ -177,7 +199,9 @@ const Signup: NextPage = () => {
                 </option>
               ))}
             </select>
-            {errors.prefecture && <p className={styles.error}>{errors.prefecture.message}</p>}
+            {errors.prefecture && (
+              <p className={styles.error}>{errors.prefecture.message}</p>
+            )}
           </div>
           <div className={styles.formGroup}>
             <InputField
@@ -203,7 +227,9 @@ const Signup: NextPage = () => {
             <InputField
               label="電話番号"
               name="phoneNumber"
-              register={register('phoneNumber', { required: '電話番号は必須です' })}
+              register={register('phoneNumber', {
+                required: '電話番号は必須です',
+              })}
               error={errors.phoneNumber?.message}
             />
           </div>
@@ -221,7 +247,10 @@ const Signup: NextPage = () => {
         {/* ログインページへのリンク */}
         <p className={styles.loginText}>
           すでにアカウントをお持ちの場合は{' '}
-          <span className={styles.loginLink} onClick={() => router.push('/login')}>
+          <span
+            className={styles.loginLink}
+            onClick={() => router.push('/login')}
+          >
             ログイン
           </span>
         </p>

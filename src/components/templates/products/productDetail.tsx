@@ -28,7 +28,9 @@ const ProductDetailPage = () => {
   const [loading, setLoading] = useState(true); // ロード中フラグ
   const [showPopup, setShowPopup] = useState(false); // ポップアップ表示状態
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [selectedManufacturer, setSelectedManufacturer] = useState<string | null>(null);
+  const [selectedManufacturer, setSelectedManufacturer] = useState<
+    string | null
+  >(null);
 
   // 商品の詳細情報を取得
   useEffect(() => {
@@ -38,7 +40,10 @@ const ProductDetailPage = () => {
           const productRef = doc(db, 'products', id as string);
           const productSnapshot = await getDoc(productRef);
           if (productSnapshot.exists()) {
-            setProduct({ id: productSnapshot.id, ...productSnapshot.data() } as Product);
+            setProduct({
+              id: productSnapshot.id,
+              ...productSnapshot.data(),
+            } as Product);
           } else {
             console.error('Product not found');
           }
@@ -69,13 +74,20 @@ const ProductDetailPage = () => {
       }
 
       // クッキーにカートの状態を保存
-      Cookies.set('cartItems', JSON.stringify([...cartItems, {
-        id: product.id,
-        name: product.name,
-        price: product.price,
-        quantity,
-        imageUrl: product.imageUrl,
-      }]), { expires: 7 });
+      Cookies.set(
+        'cartItems',
+        JSON.stringify([
+          ...cartItems,
+          {
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            quantity,
+            imageUrl: product.imageUrl,
+          },
+        ]),
+        { expires: 7 }
+      );
 
       // ポップアップ表示
       setShowPopup(true);
@@ -150,11 +162,7 @@ const ProductDetailPage = () => {
       </div>
 
       {/* ポップアップ表示 */}
-      {showPopup && (
-        <div className={styles.popup}>
-          カートに追加しました！
-        </div>
-      )}
+      {showPopup && <div className={styles.popup}>カートに追加しました！</div>}
     </div>
   );
 };

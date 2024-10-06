@@ -5,13 +5,18 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2024-06-20',
 });
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   if (req.method === 'POST') {
     try {
       const { payment_method, amount } = req.body;
 
       if (!payment_method || !amount) {
-        return res.status(400).json({ error: 'Payment method and amount are required' });
+        return res
+          .status(400)
+          .json({ error: 'Payment method and amount are required' });
       }
 
       const paymentIntent = await stripe.paymentIntents.create({

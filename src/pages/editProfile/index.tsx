@@ -9,6 +9,6 @@ const EditProfilePage: NextPage = () => {
       <EditProfile />
     </Layout>
   );
-}
+};
 
 export default EditProfilePage;

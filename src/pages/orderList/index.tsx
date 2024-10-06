@@ -11,6 +11,6 @@ const OrderListPage: NextPage = () => {
       </Layout>
     </div>
   );
-}
+};
 
 export default OrderListPage;

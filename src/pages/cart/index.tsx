@@ -9,6 +9,6 @@ const CartPage: NextPage = () => {
       <Cart />
     </Layout>
   );
-}
+};
 
 export default CartPage;

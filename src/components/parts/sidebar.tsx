@@ -15,11 +15,13 @@ const Sidebar: React.FC<SidebarProps> = ({
   selectedCategory,
   setSelectedCategory,
   selectedManufacturer,
-  setSelectedManufacturer
+  setSelectedManufacturer,
 }) => {
   const router = useRouter();
   const [categories, setCategories] = useState<string[]>([]); // カテゴリリスト
-  const [subCategories, setSubCategories] = useState<Record<string, string[]>>({}); // カテゴリごとのサブカテゴリリスト
+  const [subCategories, setSubCategories] = useState<Record<string, string[]>>(
+    {}
+  ); // カテゴリごとのサブカテゴリリスト
   const [openCategory, setOpenCategory] = useState<string | null>(null); // 開かれているカテゴリ
 
   // Firestoreからカテゴリとサブカテゴリを動的に取得
@@ -94,7 +96,9 @@ const Sidebar: React.FC<SidebarProps> = ({
               {subCategories[category]?.map((manufacturer) => (
                 <button
                   key={manufacturer}
-                  className={selectedManufacturer === manufacturer ? styles.active : ''}
+                  className={
+                    selectedManufacturer === manufacturer ? styles.active : ''
+                  }
                   onClick={() => handleManufacturerClick(manufacturer)}
                 >
                   {manufacturer}

@@ -30,8 +30,8 @@ interface Product {
 
 const ProductEditForm: NextPage<ProductEditFormProps> = ({ productId }) => {
   const router = useRouter();
-  const { user } = useAuth();  // ログインユーザーを取得
-  const [role, setRole] = useState<number | null>(null);  // ユーザーのロールを管理する
+  const { user } = useAuth(); // ログインユーザーを取得
+  const [role, setRole] = useState<number | null>(null); // ユーザーのロールを管理する
   const [product, setProduct] = useState<Partial<Product>>({});
   const [isSaving, setIsSaving] = useState(false);
 
@@ -44,7 +44,7 @@ const ProductEditForm: NextPage<ProductEditFormProps> = ({ productId }) => {
           const userDocSnapshot = await getDoc(userDocRef);
           if (userDocSnapshot.exists()) {
             const userData = userDocSnapshot.data();
-            setRole(userData.role);  // ロールをセット
+            setRole(userData.role); // ロールをセット
           }
         } catch (error) {
           console.error('Error fetching user role:', error);
@@ -57,7 +57,7 @@ const ProductEditForm: NextPage<ProductEditFormProps> = ({ productId }) => {
   // ロールが管理者でない場合はトップページにリダイレクト
   useEffect(() => {
     if (role !== null && role !== 1) {
-      router.push('/');  // 管理者でない場合はトップページにリダイレクト
+      router.push('/'); // 管理者でない場合はトップページにリダイレクト
     }
   }, [role, router]);
 
@@ -75,7 +75,11 @@ const ProductEditForm: NextPage<ProductEditFormProps> = ({ productId }) => {
     }
   }, [productId]);
 
-  const handleProductChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleProductChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
     const { name, value } = e.target;
     setProduct((prev) => ({
       ...prev,
@@ -91,7 +95,9 @@ const ProductEditForm: NextPage<ProductEditFormProps> = ({ productId }) => {
 
       uploadTask.on(
         'state_changed',
-        () => { /* プログレス表示など */ },
+        () => {
+          /* プログレス表示など */
+        },
         (error) => {
           console.error('Upload failed:', error);
         },
@@ -104,7 +110,7 @@ const ProductEditForm: NextPage<ProductEditFormProps> = ({ productId }) => {
   };
 
   const saveProduct = async () => {
-    if (isSaving) return;  // 保存処理中の場合は二重実行を防ぐ
+    if (isSaving) return; // 保存処理中の場合は二重実行を防ぐ
 
     setIsSaving(true); // 保存開始
     if (productId) {
@@ -113,7 +119,7 @@ const ProductEditForm: NextPage<ProductEditFormProps> = ({ productId }) => {
       alert('商品情報が更新されました');
     }
     setIsSaving(false); // 保存完了
-    router.push("/productList")
+    router.push('/productList');
   };
 
   return (
@@ -148,8 +154,21 @@ const ProductEditForm: NextPage<ProductEditFormProps> = ({ productId }) => {
             onChange={handleProductChange}
           />
           <label>商品画像</label>
-          <input className={styles.input} type="file" onChange={handleImageUpload} />
-          {product.imageUrl && <Image className={styles.image} src={product.imageUrl} alt="商品画像" width={150} height={150} style={{ objectFit: 'contain' }} />}
+          <input
+            className={styles.input}
+            type="file"
+            onChange={handleImageUpload}
+          />
+          {product.imageUrl && (
+            <Image
+              className={styles.image}
+              src={product.imageUrl}
+              alt="商品画像"
+              width={150}
+              height={150}
+              style={{ objectFit: 'contain' }}
+            />
+          )}
           <Textarea
             label="商品説明"
             value={product.description || ''}

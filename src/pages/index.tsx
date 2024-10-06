@@ -1,13 +1,13 @@
-import { useEffect } from "react";
-import { useRouter } from "next/router";
-import Head from "next/head";
+import { useEffect } from 'react';
+import { useRouter } from 'next/router';
+import Head from 'next/head';
 
 export default function Home() {
   const router = useRouter();
 
   useEffect(() => {
     // ページロード時に /products にリダイレクト
-    router.push("/products");
+    router.push('/products');
   }, [router]);
 
   return (

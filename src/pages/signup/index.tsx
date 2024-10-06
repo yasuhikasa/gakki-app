@@ -9,6 +9,6 @@ const SignupPage: NextPage = () => {
       <Signup />
     </Layout>
   );
-}
+};
 
 export default SignupPage;

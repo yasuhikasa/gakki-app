@@ -5,7 +5,9 @@ import CheckoutForm from '@/components/templates/checkoutForm';
 import styles from '@/styles/pages/checkout.module.css';
 
 // Stripe 公開キーを使用してインスタンスを作成
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
+const stripePromise = loadStripe(
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
+);
 
 const CheckoutPage = () => {
   return (

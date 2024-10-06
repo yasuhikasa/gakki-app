@@ -9,6 +9,6 @@ const ProductsPage: NextPage = () => {
       <Products />
     </Layout>
   );
-}
+};
 
 export default ProductsPage;

@@ -9,6 +9,6 @@ const MyPage: NextPage = () => {
       <Mypage />
     </Layout>
   );
-}
+};
 
 export default MyPage;

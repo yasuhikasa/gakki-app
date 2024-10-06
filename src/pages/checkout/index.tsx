@@ -9,6 +9,6 @@ const CheckoutPage: NextPage = () => {
       <Checkout />
     </Layout>
   );
-}
+};
 
 export default CheckoutPage;

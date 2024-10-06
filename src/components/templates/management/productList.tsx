@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { collection, getDocs, deleteDoc, doc, query, orderBy } from 'firebase/firestore';
+import {
+  collection,
+  getDocs,
+  deleteDoc,
+  doc,
+  query,
+  orderBy,
+} from 'firebase/firestore';
 import { useRouter } from 'next/router';
 import { db } from '@/libs/firebase';
 import Image from 'next/image';
@@ -23,13 +30,18 @@ const ProductList = () => {
 
   useEffect(() => {
     const fetchProducts = async () => {
-      const productsQuery = query(collection(db, 'products'), orderBy('createdAt', 'desc'));
+      const productsQuery = query(
+        collection(db, 'products'),
+        orderBy('createdAt', 'desc')
+      );
       const productsCollection = await getDocs(productsQuery);
       const productList: Product[] = productsCollection.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
         createdAt: doc.data().createdAt.toDate(),
-        updatedAt: doc.data().updatedAt ? doc.data().updatedAt.toDate() : undefined,
+        updatedAt: doc.data().updatedAt
+          ? doc.data().updatedAt.toDate()
+          : undefined,
       })) as Product[];
       setProducts(productList);
     };
@@ -64,7 +76,7 @@ const ProductList = () => {
           {products.map((product) => (
             <tr key={product.id}>
               <td>
-              <Image
+                <Image
                   src={product.imageUrl}
                   alt={product.name}
                   width={100}
@@ -80,8 +92,16 @@ const ProductList = () => {
               <td>{product.createdAt.toLocaleString()}</td>
               <td>
                 <div className={styles.buttonContainer}>
-                  <Button label="編集" onClick={() => router.push(`/productEdit/${product.id}`)} width="80%" />
-                  <Button label="削除" onClick={() => deleteProduct(product.id)} width="80%" />
+                  <Button
+                    label="編集"
+                    onClick={() => router.push(`/productEdit/${product.id}`)}
+                    width="80%"
+                  />
+                  <Button
+                    label="削除"
+                    onClick={() => deleteProduct(product.id)}
+                    width="80%"
+                  />
                 </div>
               </td>
             </tr>

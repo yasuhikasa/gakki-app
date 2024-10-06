@@ -61,11 +61,13 @@ const ProductAdd: NextPage = () => {
     const fetchCategories = async () => {
       try {
         const categoriesSnapshot = await getDocs(collection(db, 'categories'));
-        const categoriesList: Category[] = categoriesSnapshot.docs.map((doc) => {
-          const data = doc.data();
-          const subCategories = data["メーカー"]; // フィールド名 "メーカー" に対応する配列
-          return { name: doc.id, subCategories: subCategories as string[] };
-        });
+        const categoriesList: Category[] = categoriesSnapshot.docs.map(
+          (doc) => {
+            const data = doc.data();
+            const subCategories = data['メーカー']; // フィールド名 "メーカー" に対応する配列
+            return { name: doc.id, subCategories: subCategories as string[] };
+          }
+        );
         setCategories(categoriesList);
       } catch (error) {
         console.error('Error fetching categories:', error);
@@ -96,9 +98,23 @@ const ProductAdd: NextPage = () => {
       return;
     }
 
-    const productWithTimestamp = { ...newProduct, createdAt: new Date(), updatedAt: new Date() };
+    const productWithTimestamp = {
+      ...newProduct,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
     await addDoc(collection(db, 'products'), productWithTimestamp);
-    setNewProduct({ name: '', price: 0, stock: 0, category: '', subCategory: '', imageUrl: '', description: '', createdAt: new Date(), updatedAt: undefined });
+    setNewProduct({
+      name: '',
+      price: 0,
+      stock: 0,
+      category: '',
+      subCategory: '',
+      imageUrl: '',
+      description: '',
+      createdAt: new Date(),
+      updatedAt: undefined,
+    });
     alert('商品が登録されました');
   };
 
@@ -111,7 +127,9 @@ const ProductAdd: NextPage = () => {
 
       uploadTask.on(
         'state_changed',
-        () => { /* プログレス表示など */ },
+        () => {
+          /* プログレス表示など */
+        },
         (error) => {
           console.error('Upload failed:', error);
         },
@@ -123,7 +141,11 @@ const ProductAdd: NextPage = () => {
     }
   };
 
-  const handleNewProductChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const handleNewProductChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
+  ) => {
     const { name, value } = e.target;
     setNewProduct((prev) => ({
       ...prev,
@@ -159,7 +181,12 @@ const ProductAdd: NextPage = () => {
           onChange={handleNewProductChange}
         />
         <label className={styles.label}>カテゴリ</label>
-        <select className={styles.input} name="category" value={newProduct.category} onChange={handleNewProductChange}>
+        <select
+          className={styles.input}
+          name="category"
+          value={newProduct.category}
+          onChange={handleNewProductChange}
+        >
           <option value="">選択してください</option>
           {categories.map((category) => (
             <option key={category.name} value={category.name}>
@@ -170,10 +197,16 @@ const ProductAdd: NextPage = () => {
         {newProduct.category && (
           <>
             <label className={styles.label}>サブカテゴリ</label>
-            <select className={styles.input} name="subCategory" value={newProduct.subCategory} onChange={handleNewProductChange}>
+            <select
+              className={styles.input}
+              name="subCategory"
+              value={newProduct.subCategory}
+              onChange={handleNewProductChange}
+            >
               <option value="">選択してください</option>
               {categories
-                .find((cat) => cat.name === newProduct.category)?.subCategories.map((subCategory) => (
+                .find((cat) => cat.name === newProduct.category)
+                ?.subCategories.map((subCategory) => (
                   <option key={subCategory} value={subCategory}>
                     {subCategory}
                   </option>
@@ -184,11 +217,17 @@ const ProductAdd: NextPage = () => {
         <Textarea
           label="商品説明"
           value={newProduct.description}
-          onChange={(e) => setNewProduct((prev) => ({ ...prev, description: e.target.value }))}
+          onChange={(e) =>
+            setNewProduct((prev) => ({ ...prev, description: e.target.value }))
+          }
           rows={4}
         />
         <label className={styles.label}>商品画像</label>
-        <input className={styles.input} type="file" onChange={handleImageUpload} />
+        <input
+          className={styles.input}
+          type="file"
+          onChange={handleImageUpload}
+        />
         {newProduct.imageUrl && (
           <Image
             className={styles.img}
@@ -202,7 +241,6 @@ const ProductAdd: NextPage = () => {
         <Button label="商品追加" type="submit" width="100%" />
       </form>
     </div>
-
   );
 };
 

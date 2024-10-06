@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { collection, getDocs, updateDoc, query, orderBy, doc } from 'firebase/firestore';
+import {
+  collection,
+  getDocs,
+  updateDoc,
+  query,
+  orderBy,
+  doc,
+} from 'firebase/firestore';
 import { db } from '@/libs/firebase';
 import styles from '@/styles/pages/orderList.module.css';
 import Button from '@/components/parts/button';
@@ -60,7 +67,10 @@ const OrderList: NextPage = () => {
 
   useEffect(() => {
     const fetchOrders = async () => {
-      const ordersQuery = query(collection(db, 'orders'), orderBy('createdAt', 'desc'));
+      const ordersQuery = query(
+        collection(db, 'orders'),
+        orderBy('createdAt', 'desc')
+      );
       const ordersSnapshot = await getDocs(ordersQuery);
       const orderList = ordersSnapshot.docs.map((doc) => ({
         id: doc.id,
@@ -77,7 +87,9 @@ const OrderList: NextPage = () => {
     const orderDoc = doc(db, 'orders', id);
     await updateDoc(orderDoc, { status: newStatus });
     setOrders((prev) =>
-      prev.map((order) => (order.id === id ? { ...order, status: newStatus } : order))
+      prev.map((order) =>
+        order.id === id ? { ...order, status: newStatus } : order
+      )
     );
   };
 

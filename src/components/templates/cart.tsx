@@ -69,9 +69,13 @@ const CartPage = () => {
                       type="number"
                       value={item.quantity}
                       min="1"
-                      onChange={(e) => handleQuantityChange(item.id, Number(e.target.value))}
+                      onChange={(e) =>
+                        handleQuantityChange(item.id, Number(e.target.value))
+                      }
                     />
-                    <button onClick={() => handleRemoveItem(item.id)}>削除</button>
+                    <button onClick={() => handleRemoveItem(item.id)}>
+                      削除
+                    </button>
                   </div>
                 </div>
               </li>

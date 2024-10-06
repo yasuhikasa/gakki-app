@@ -36,7 +36,12 @@ const EditProfile = () => {
   const { user } = useAuth();
   const router = useRouter();
   const [profile, setProfile] = useState<UserProfile | null>(null);
-  const { register, handleSubmit, setValue, formState: { errors } } = useForm<UserProfile>();
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = useForm<UserProfile>();
   const [updatedEmail, setUpdatedEmail] = useState(''); // メールアドレスの更新用
 
   useEffect(() => {
@@ -74,14 +79,16 @@ const EditProfile = () => {
 
         // メールアドレスの初期値も設定
         setValue('email', userData.email);
-        setUpdatedEmail(userData.email);  // メールアドレスの初期値
+        setUpdatedEmail(userData.email); // メールアドレスの初期値
       }
     };
 
     fetchUserProfile();
   }, [user, setValue]);
 
-  const handleAddressUpdate: SubmitHandler<UserProfile> = async (data: UserProfile) => {
+  const handleAddressUpdate: SubmitHandler<UserProfile> = async (
+    data: UserProfile
+  ) => {
     if (user) {
       try {
         // Firebase Authentication のメールアドレスを更新
@@ -117,7 +124,10 @@ const EditProfile = () => {
   return (
     <div className={styles.container}>
       <h2 className={styles.title}>ユーザー情報を編集</h2>
-      <form onSubmit={handleSubmit(handleAddressUpdate)} className={styles.form}>
+      <form
+        onSubmit={handleSubmit(handleAddressUpdate)}
+        className={styles.form}
+      >
         {profile && (
           <>
             <InputField
@@ -134,23 +144,29 @@ const EditProfile = () => {
             />
             <InputField
               label="メールアドレス"
-              register={register('email', { required: 'メールアドレスは必須です' })}
+              register={register('email', {
+                required: 'メールアドレスは必須です',
+              })}
               value={updatedEmail} // メールアドレスの状態を反映
               onChange={(e) => setUpdatedEmail(e.target.value)} // メールアドレスを更新
               error={errors.email?.message as string | undefined}
-              name="email" 
+              name="email"
             />
 
             <h3>通常の住所</h3>
             <InputField
               label="郵便番号"
-              register={register('postalCode', { required: '郵便番号は必須です' })}
+              register={register('postalCode', {
+                required: '郵便番号は必須です',
+              })}
               error={errors.postalCode?.message as string | undefined}
               name="postalCode"
             />
             <InputField
               label="都道府県"
-              register={register('prefecture', { required: '都道府県は必須です' })}
+              register={register('prefecture', {
+                required: '都道府県は必須です',
+              })}
               error={errors.prefecture?.message as string | undefined}
               name="prefecture"
             />
@@ -168,7 +184,9 @@ const EditProfile = () => {
             />
             <InputField
               label="電話番号"
-              register={register('phoneNumber', { required: '電話番号は必須です' })}
+              register={register('phoneNumber', {
+                required: '電話番号は必須です',
+              })}
               error={errors.phoneNumber?.message as string | undefined}
               name="phoneNumber"
             />
@@ -176,31 +194,41 @@ const EditProfile = () => {
             <h3>配送先住所</h3>
             <InputField
               label="郵便番号"
-              register={register('shippingPostalCode', { required: '郵便番号は必須です' })}
+              register={register('shippingPostalCode', {
+                required: '郵便番号は必須です',
+              })}
               error={errors.shippingPostalCode?.message as string | undefined}
               name="shippingPostalCode"
             />
             <InputField
               label="都道府県"
-              register={register('shippingPrefecture', { required: '都道府県は必須です' })}
+              register={register('shippingPrefecture', {
+                required: '都道府県は必須です',
+              })}
               error={errors.shippingPrefecture?.message as string | undefined}
               name="shippingPrefecture"
             />
             <InputField
               label="市区町村"
-              register={register('shippingCity', { required: '市区町村は必須です' })}
+              register={register('shippingCity', {
+                required: '市区町村は必須です',
+              })}
               error={errors.shippingCity?.message as string | undefined}
               name="shippingCity"
             />
             <InputField
               label="番地"
-              register={register('shippingAddressLine', { required: '番地は必須です' })}
+              register={register('shippingAddressLine', {
+                required: '番地は必須です',
+              })}
               error={errors.shippingAddressLine?.message as string | undefined}
               name="shippingAddressLine"
             />
             <InputField
               label="電話番号"
-              register={register('shippingPhoneNumber', { required: '電話番号は必須です' })}
+              register={register('shippingPhoneNumber', {
+                required: '電話番号は必須です',
+              })}
               error={errors.shippingPhoneNumber?.message as string | undefined}
               name="shippingPhoneNumber"
             />

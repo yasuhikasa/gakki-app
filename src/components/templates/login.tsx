@@ -15,7 +15,11 @@ interface LoginFormData {
 }
 
 const Login: NextPage = () => {
-  const { register, handleSubmit, formState: { errors } } = useForm<LoginFormData>();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFormData>();
   const [errorMessage, setErrorMessage] = useState('');
   const router = useRouter();
   const { redirect } = router.query; // クエリパラメータからredirectを取得
@@ -28,7 +32,9 @@ const Login: NextPage = () => {
     }
   }, []);
 
-  const onSubmit: SubmitHandler<LoginFormData> = async (data: LoginFormData) => {
+  const onSubmit: SubmitHandler<LoginFormData> = async (
+    data: LoginFormData
+  ) => {
     try {
       await signInWithEmailAndPassword(auth, data.email, data.password);
       // リダイレクトが 'checkout' なら /checkout、その他は /products に遷移
@@ -64,7 +70,9 @@ const Login: NextPage = () => {
           <div className={styles.formGroup}>
             <InputField
               label="Password"
-              register={register('password', { required: 'Password is required' })}
+              register={register('password', {
+                required: 'Password is required',
+              })}
               error={errors.password?.message}
               type="password"
               name="password"
@@ -81,7 +89,10 @@ const Login: NextPage = () => {
         {/* サインアップへのリンク */}
         <p className={styles.signupText}>
           サインアップがまだの場合はこちら→{' '}
-          <span className={styles.signupLink} onClick={() => router.push('/signup')}>
+          <span
+            className={styles.signupLink}
+            onClick={() => router.push('/signup')}
+          >
             サインアップ
           </span>
         </p>

@@ -40,7 +40,7 @@ const InputField = ({
         value={value} // 外部からの値を受け取る
         onChange={(e) => {
           if (onChange) onChange(e); // 外部からのonChangeを呼び出す
-          if (register) register.onChange(e);  // react-hook-formのonChangeを呼び出す
+          if (register) register.onChange(e); // react-hook-formのonChangeを呼び出す
         }}
         name={register ? register.name : name} // registerがあれば使用、なければnameを使用
         ref={register ? register.ref : undefined} // registerからrefを使用

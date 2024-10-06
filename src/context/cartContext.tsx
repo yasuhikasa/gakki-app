@@ -1,4 +1,10 @@
-import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
+import React, {
+  createContext,
+  useState,
+  useContext,
+  ReactNode,
+  useEffect,
+} from 'react';
 import Cookies from 'js-cookie';
 
 interface CartItem {
@@ -74,10 +80,22 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     setCartItems([]);
   };
 
-  const totalAmount = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  const totalAmount = cartItems.reduce(
+    (acc, item) => acc + item.price * item.quantity,
+    0
+  );
 
   return (
-    <CartContext.Provider value={{ cartItems, addToCart, updateCartItemQuantity, removeFromCart, clearCart, totalAmount }}>
+    <CartContext.Provider
+      value={{
+        cartItems,
+        addToCart,
+        updateCartItemQuantity,
+        removeFromCart,
+        clearCart,
+        totalAmount,
+      }}
+    >
       {children}
     </CartContext.Provider>
   );
