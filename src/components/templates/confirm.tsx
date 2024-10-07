@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { doc, getDoc } from 'firebase/firestore';
+import { collection, query, orderBy, limit, getDocs } from 'firebase/firestore';
 import { db } from '@/libs/firebase'; // Firestore設定
 import styles from '@/styles/pages/confirm.module.css';
 
@@ -25,17 +25,18 @@ interface Order {
 
 const ConfirmationPage = () => {
   const [order, setOrder] = useState<Order | null>(null); // 注文情報の状態
-  const orderId = 'dtaS5X5h9SJiv5S0wDGz'; // 注文IDをハードコード（例）で指定
 
-  // Firestoreから注文情報を取得
+  // Firestoreから最新の注文情報を取得
   useEffect(() => {
-    const fetchOrder = async () => {
+    const fetchLatestOrder = async () => {
       try {
-        const orderDocRef = doc(db, 'orders', orderId); // 'orders' コレクションから注文情報を取得
-        const orderDocSnapshot = await getDoc(orderDocRef);
+        const ordersCollectionRef = collection(db, 'orders');
+        const q = query(ordersCollectionRef, orderBy('createdAt', 'desc'), limit(1)); // 'createdAt'でソートして最新の注文を取得
+        const querySnapshot = await getDocs(q);
 
-        if (orderDocSnapshot.exists()) {
-          const orderData = orderDocSnapshot.data() as Order;
+        if (!querySnapshot.empty) {
+          const latestOrderDoc = querySnapshot.docs[0];
+          const orderData = latestOrderDoc.data() as Order;
           setOrder(orderData);
         } else {
           console.error('注文情報が見つかりません');
@@ -45,8 +46,8 @@ const ConfirmationPage = () => {
       }
     };
 
-    fetchOrder();
-  }, [orderId]);
+    fetchLatestOrder();
+  }, []);
 
   return (
     <div className={styles.container}>
