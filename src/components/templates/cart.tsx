@@ -59,7 +59,7 @@ const CartPage = () => {
                       alt={item.name}
                       width={80}
                       height={80}
-                      objectFit="contain"
+                      style={{ objectFit: 'contain' }}
                     />
                   </div>
                   <div className={styles.itemText}>

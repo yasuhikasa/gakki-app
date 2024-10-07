@@ -235,7 +235,7 @@ const ProductAdd: NextPage = () => {
             alt="商品画像"
             width={100}
             height={100}
-            objectFit="contain"
+            style={{ objectFit: 'contain' }}
           />
         )}
         <Button label="商品追加" type="submit" width="100%" />
