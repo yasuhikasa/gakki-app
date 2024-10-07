@@ -15,7 +15,7 @@ services:
       - NEXT_PUBLIC_FIREBASE_APP_ID=${NEXT_PUBLIC_FIREBASE_APP_ID}
       - NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}
       - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
-      - NODE_ENV=production
+      - NODE_ENV=development # 開発環境では development
     volumes:
       - .:/app
-    command: npm run start
+    command: npm run dev # 開発時は 'npm run dev'

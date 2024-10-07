@@ -1,7 +1,13 @@
 import React, { FC, useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { useAuth } from '@/context/authContext'; // ログイン情報を取得
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { useAuth } from '@/context/authContext';
+import {
+  doc,
+  getDoc,
+  updateDoc,
+  collection,
+  getDocs,
+} from 'firebase/firestore';
 import { db, storage } from '@/libs/firebase';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import InputField from '@/components/parts/inputField';
@@ -27,12 +33,37 @@ interface Product {
   updatedAt?: Date;
 }
 
+interface Category {
+  name: string; // ドキュメントID（メインカテゴリ）
+  subCategories: string[]; // サブカテゴリ（メーカー名）
+}
+
 const ProductEditForm: FC<ProductEditFormProps> = ({ productId }) => {
   const router = useRouter();
-  const { user } = useAuth(); // ログインユーザーを取得
-  const [role, setRole] = useState<number | null>(null); // ユーザーのロールを管理する
+  const { user } = useAuth();
+  const [role, setRole] = useState<number | null>(null);
   const [product, setProduct] = useState<Partial<Product>>({});
   const [isSaving, setIsSaving] = useState(false);
+  const [categories, setCategories] = useState<Category[]>([]); // カテゴリデータを格納
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null); // 選択されたメインカテゴリ
+  const [subCategories, setSubCategories] = useState<string[]>([]); // 選択されたメインカテゴリに対応するサブカテゴリ
+  const [selectedSubCategory, setSelectedSubCategory] = useState<string | null>(
+    null
+  ); // 選択されたサブカテゴリ
+
+  // カテゴリデータを取得
+  useEffect(() => {
+    const fetchCategories = async () => {
+      const categoriesSnapshot = await getDocs(collection(db, 'categories'));
+      const categoriesList: Category[] = categoriesSnapshot.docs.map((doc) => ({
+        name: doc.id, // メインカテゴリはドキュメントID
+        subCategories: doc.data().メーカー || [], // サブカテゴリはメーカー配列
+      }));
+      setCategories(categoriesList);
+    };
+
+    fetchCategories();
+  }, []);
 
   // ユーザーの役割を取得して管理者か確認する
   useEffect(() => {
@@ -56,7 +87,7 @@ const ProductEditForm: FC<ProductEditFormProps> = ({ productId }) => {
   // ロールが管理者でない場合はトップページにリダイレクト
   useEffect(() => {
     if (role !== null && role !== 1) {
-      router.push('/'); // 管理者でない場合はトップページにリダイレクト
+      router.push('/');
     }
   }, [role, router]);
 
@@ -67,12 +98,25 @@ const ProductEditForm: FC<ProductEditFormProps> = ({ productId }) => {
         const productDoc = doc(db, 'products', productId);
         const productSnapshot = await getDoc(productDoc);
         if (productSnapshot.exists()) {
-          setProduct(productSnapshot.data() as Product);
+          const productData = productSnapshot.data() as Product;
+          setProduct(productData);
+          setSelectedCategory(productData.category); // 商品のカテゴリを選択状態に設定
+          setSelectedSubCategory(productData.subCategory); // 商品のサブカテゴリを選択状態に設定
         }
       };
       fetchProduct();
     }
   }, [productId]);
+
+  // カテゴリが選択されたときに対応するサブカテゴリをセット
+  useEffect(() => {
+    if (selectedCategory) {
+      const selectedCat = categories.find(
+        (cat) => cat.name === selectedCategory
+      );
+      setSubCategories(selectedCat ? selectedCat.subCategories : []);
+    }
+  }, [selectedCategory, categories]);
 
   const handleProductChange = (
     e: React.ChangeEvent<
@@ -109,16 +153,21 @@ const ProductEditForm: FC<ProductEditFormProps> = ({ productId }) => {
   };
 
   const saveProduct = async () => {
-    if (isSaving) return; // 保存処理中の場合は二重実行を防ぐ
+    if (isSaving) return;
 
     setIsSaving(true); // 保存開始
     if (productId) {
       const productRef = doc(db, 'products', productId);
-      await updateDoc(productRef, { ...product, updatedAt: new Date() });
+      await updateDoc(productRef, {
+        ...product,
+        category: selectedCategory, // メインカテゴリを保存
+        subCategory: selectedSubCategory, // サブカテゴリを保存
+        updatedAt: new Date(), // 更新日時をセット
+      });
       alert('商品情報が更新されました');
     }
     setIsSaving(false); // 保存完了
-    router.push('/productList');
+    router.push('/productList'); // 商品一覧ページにリダイレクト
   };
 
   return (
@@ -146,12 +195,39 @@ const ProductEditForm: FC<ProductEditFormProps> = ({ productId }) => {
             type="number"
             onChange={handleProductChange}
           />
-          <InputField
-            label="カテゴリ"
-            value={product.category || ''}
+
+          {/* カテゴリのドロップダウン */}
+          <label>カテゴリ</label>
+          <select
+            className={styles.select}
+            value={selectedCategory || ''}
             name="category"
-            onChange={handleProductChange}
-          />
+            onChange={(e) => setSelectedCategory(e.target.value)}
+          >
+            <option value="">カテゴリを選択</option>
+            {categories.map((category) => (
+              <option key={category.name} value={category.name}>
+                {category.name}
+              </option>
+            ))}
+          </select>
+
+          {/* サブカテゴリのドロップダウン（選択されたメインカテゴリに応じて変化） */}
+          <label>メーカー</label>
+          <select
+            className={styles.select}
+            value={selectedSubCategory || ''}
+            name="subCategory"
+            onChange={(e) => setSelectedSubCategory(e.target.value)}
+          >
+            <option value="">メーカーを選択</option>
+            {subCategories.map((subCategory) => (
+              <option key={subCategory} value={subCategory}>
+                {subCategory}
+              </option>
+            ))}
+          </select>
+
           <label>商品画像</label>
           <input
             className={styles.input}
@@ -168,6 +244,7 @@ const ProductEditForm: FC<ProductEditFormProps> = ({ productId }) => {
               style={{ objectFit: 'contain' }}
             />
           )}
+
           <Textarea
             label="商品説明"
             value={product.description || ''}
