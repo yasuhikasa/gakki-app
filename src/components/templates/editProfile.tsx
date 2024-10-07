@@ -177,7 +177,7 @@ const EditProfile = () => {
               name="city"
             />
             <InputField
-              label="番地"
+              label="番地以降"
               register={register('addressLine', { required: '番地は必須です' })}
               error={errors.addressLine?.message as string | undefined}
               name="addressLine"
