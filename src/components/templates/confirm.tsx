@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { collection, query, orderBy, limit, getDocs } from 'firebase/firestore';
-import { db } from '@/libs/firebase'; // Firestore設定
+import { db } from '@/libs/firebase';
 import styles from '@/styles/pages/confirm.module.css';
 
 interface Order {
@@ -31,7 +31,11 @@ const ConfirmationPage = () => {
     const fetchLatestOrder = async () => {
       try {
         const ordersCollectionRef = collection(db, 'orders');
-        const q = query(ordersCollectionRef, orderBy('createdAt', 'desc'), limit(1)); // 'createdAt'でソートして最新の注文を取得
+        const q = query(
+          ordersCollectionRef,
+          orderBy('createdAt', 'desc'),
+          limit(1)
+        ); // 'createdAt'でソートして最新の注文を取得
         const querySnapshot = await getDocs(q);
 
         if (!querySnapshot.empty) {

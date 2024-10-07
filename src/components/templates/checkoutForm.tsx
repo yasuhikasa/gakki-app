@@ -5,9 +5,9 @@ import axios from 'axios';
 import { useCart } from '@/context/cartContext';
 import { useAuth } from '@/context/authContext';
 import { db } from '@/libs/firebase'; // Firestoreのインポート
-import { doc, getDoc, collection, addDoc } from 'firebase/firestore'; // Firestoreからデータ操作
+import { addDoc, collection, doc, getDoc, updateDoc } from 'firebase/firestore'; // Firestoreからデータ操作
 import styles from '@/styles/pages/checkout.module.css';
-import ButtonComponent from '@/components/parts/button';
+import Button from '@/components/parts/button';
 
 const CheckoutForm = () => {
   const router = useRouter();
@@ -54,6 +54,13 @@ const CheckoutForm = () => {
   const handleCardPayment = async (event: React.FormEvent) => {
     event.preventDefault();
     if (!stripe || !elements) return;
+
+    // 注文確定前に在庫を確認
+    const hasSufficientStock = await checkProductStock();
+    if (!hasSufficientStock) {
+      setErrorMessage('在庫が不足している商品があります。');
+      return;
+    }
 
     // 注文確定前に確認アラートを表示
     const confirmPayment = window.confirm('本当に注文を確定しますか？');
@@ -106,10 +113,39 @@ const CheckoutForm = () => {
     }
   };
 
-  // Firestoreに注文情報を保存する関数
+  // Firestoreで商品の在庫数をチェックする関数
+  const checkProductStock = async (): Promise<boolean> => {
+    try {
+      for (const item of cartItems) {
+        const productDocRef = doc(db, 'products', item.id);
+        const productSnapshot = await getDoc(productDocRef);
+
+        if (productSnapshot.exists()) {
+          const productData = productSnapshot.data();
+          const availableStock = productData.stock; // 現在の在庫数を取得
+
+          // 在庫が不足している場合はエラーメッセージを表示
+          if (availableStock < item.quantity) {
+            console.error(`商品 ${item.name} の在庫が不足しています。`);
+            return false; // 在庫が不足している場合、falseを返す
+          }
+        } else {
+          console.error(`商品 ${item.name} が見つかりません。`);
+          return false;
+        }
+      }
+      return true; // 全ての商品で在庫が十分ある場合、trueを返す
+    } catch (error) {
+      console.error('Error checking product stock:', error);
+      return false; // 在庫確認に失敗した場合もfalseを返す
+    }
+  };
+
+  // Firestoreに注文情報を保存し、在庫を更新する関数
   const saveOrderToFirestore = async () => {
     if (user) {
       try {
+        // Firestoreに注文情報を保存
         await addDoc(collection(db, 'orders'), {
           userId: user.uid,
           cartItems: cartItems.map((item) => ({
@@ -123,9 +159,38 @@ const CheckoutForm = () => {
           status: '',
           createdAt: new Date(),
         });
+
+        // 商品の在庫数を更新
+        await updateProductStock();
       } catch (error) {
         console.error('Error saving order to Firestore:', error);
       }
+    }
+  };
+
+  // Firestoreで商品の在庫数を減らす関数
+  const updateProductStock = async () => {
+    try {
+      // カート内の各商品の在庫数を減らす
+      for (const item of cartItems) {
+        const productDocRef = doc(db, 'products', item.id);
+        const productSnapshot = await getDoc(productDocRef);
+
+        if (productSnapshot.exists()) {
+          const productData = productSnapshot.data();
+          const newStock = productData.stock - item.quantity;
+
+          if (newStock >= 0) {
+            // Firestore内の在庫数を更新
+            await updateDoc(productDocRef, {
+              stock: newStock,
+              updatedAt: new Date(),
+            });
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error updating product stock:', error);
     }
   };
 
@@ -146,7 +211,7 @@ const CheckoutForm = () => {
       {paymentSucceeded && (
         <p className={styles.successMessage}>支払いが成功しました！</p>
       )}
-      <ButtonComponent
+      <Button
         label={isProcessing ? '処理中...' : '支払いを確定'}
         width="100%"
         height="50px"
