@@ -86,7 +86,7 @@ const Header = () => {
     <header className={styles.header}>
       <div className={styles.banner}>
         <h1 className={styles.title} onClick={goToHomePage}>
-          楽器屋オンラインショップ
+          楽器屋オンラインショップ|日笠泰彰ポートフォリオ
         </h1>{' '}
         {/* タイトルクリックでホームページへ遷移 */}
       </div>

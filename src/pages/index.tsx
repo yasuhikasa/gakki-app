@@ -13,7 +13,8 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Redirecting...</title>
+      <title>日笠泰彰 ポートフォリオ | フルスタックエンジニア</title>
+        <meta name="description" content="Next.jsとFirebaseで構築した楽器屋オンラインショップのデモです。日笠泰彰のエンジニアとしての技術スタックを公開中。" />
         <meta name="description" content="トップページ" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
