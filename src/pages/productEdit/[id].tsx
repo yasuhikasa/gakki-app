@@ -8,7 +8,7 @@ const ProductEditPage: NextPage = () => {
   const router = useRouter();
   const { id } = router.query; // URLのidパラメータを取得
 
-  if (!id) return <p>商品IDが見つかりません。</p>;
+  if (!id) return <p>商品IDが見つかりません。.</p>;
 
   return (
     <div>
