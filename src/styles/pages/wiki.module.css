@@ -1,0 +1,310 @@
+/* 公式プロフィール Wiki — ドキュメント風・信頼感のあるレイアウト */
+
+.page {
+  min-height: 100vh;
+  background: #f6f7f9;
+  color: #1a1d21;
+  font-family:
+    'Hiragino Sans',
+    'Hiragino Kaku Gothic ProN',
+    'Noto Sans JP',
+    system-ui,
+    -apple-system,
+    sans-serif;
+  line-height: 1.65;
+}
+
+.shell {
+  max-width: 52rem;
+  margin: 0 auto;
+  padding: 2.5rem 1.25rem 4rem;
+}
+
+.docPaper {
+  background: #fff;
+  border: 1px solid #e2e6ec;
+  border-radius: 2px;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.docHeader {
+  padding: 2rem 2rem 1.5rem;
+  border-bottom: 1px solid #e8ecf2;
+  background: linear-gradient(180deg, #fafbfc 0%, #fff 100%);
+}
+
+.badge {
+  display: inline-block;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #475569;
+  margin-bottom: 0.75rem;
+}
+
+.title {
+  font-size: clamp(1.5rem, 4vw, 1.875rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #0f172a;
+  line-height: 1.25;
+}
+
+.lead {
+  margin-top: 1rem;
+  font-size: 0.9375rem;
+  color: #475569;
+  max-width: 42em;
+}
+
+.metaRow {
+  margin-top: 1.25rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.25rem;
+  font-size: 0.8125rem;
+  color: #64748b;
+}
+
+.metaRow span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.metaRow kbd {
+  font-family: inherit;
+  font-size: 0.75rem;
+  padding: 0.1rem 0.35rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 3px;
+  background: #f8fafc;
+}
+
+.docBody {
+  padding: 2rem;
+}
+
+.section {
+  margin-bottom: 2.25rem;
+}
+
+.section:last-child {
+  margin-bottom: 0;
+}
+
+.sectionTitle {
+  font-size: 1.0625rem;
+  font-weight: 700;
+  color: #0f172a;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.sectionBody {
+  font-size: 0.9375rem;
+  color: #334155;
+}
+
+.sectionBody p + p {
+  margin-top: 0.85em;
+}
+
+.sectionBody h3 {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #0f172a;
+  margin-top: 1.25rem;
+  margin-bottom: 0.4rem;
+  line-height: 1.4;
+}
+
+.sectionBody h3:first-child {
+  margin-top: 0;
+}
+
+.sectionBody ul {
+  margin: 0.75rem 0 0 1.25rem;
+  padding: 0;
+}
+
+.sectionBody li {
+  margin-bottom: 0.45em;
+}
+
+.sectionBody li::marker {
+  color: #94a3b8;
+}
+
+.subheading {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #0f172a;
+  margin-top: 1.25rem;
+  margin-bottom: 0.35rem;
+}
+
+.subheading:first-child {
+  margin-top: 0;
+}
+
+.linkList {
+  list-style: none;
+  margin: 0.5rem 0 0;
+  padding: 0;
+}
+
+.linkList li {
+  margin-bottom: 0.65rem;
+  padding-left: 0;
+}
+
+.linkList a {
+  color: #1d4ed8;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.linkList a:hover {
+  color: #1e40af;
+}
+
+.linkPending {
+  color: #64748b;
+  font-size: 0.875rem;
+}
+
+/* その他関連リンク（被リンク用） */
+.relatedIntro {
+  margin-bottom: 0.75rem;
+}
+
+.relatedLinkList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.relatedLinkList li {
+  margin-bottom: 0.65rem;
+  font-size: 0.9375rem;
+  color: #334155;
+  line-height: 1.5;
+}
+
+.relatedLink {
+  color: #1d4ed8;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  font-weight: 500;
+}
+
+.relatedLink:hover {
+  color: #1e40af;
+}
+
+.relatedDesc {
+  color: #64748b;
+  font-size: 0.875rem;
+}
+
+.relatedEmpty {
+  font-size: 0.875rem;
+  color: #64748b;
+  margin: 0;
+}
+
+/* 画像ギャラリー（画像検索向けに alt・寸法を明示） */
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.figure {
+  margin: 0;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  overflow: hidden;
+  background: #f8fafc;
+}
+
+.imageSlot {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f1f5f9;
+}
+
+.imageSlot img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.placeholderLabel {
+  padding: 0.75rem 1rem;
+  text-align: center;
+  font-size: 0.75rem;
+  line-height: 1.45;
+  color: #64748b;
+  word-break: break-all;
+}
+
+.caption {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.75rem;
+  color: #64748b;
+  border-top: 1px solid #e8ecf2;
+  background: #fff;
+}
+
+/* 画像クリックで外部公式へ（画像＋キャプションで同一URLを明示） */
+.figureLink {
+  display: block;
+  line-height: 0;
+  color: inherit;
+  text-decoration: none;
+}
+
+.figureLink:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+.caption a {
+  color: #1d4ed8;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.caption a:hover {
+  color: #1e40af;
+}
+
+.footnote {
+  margin-top: 2rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid #e8ecf2;
+  font-size: 0.75rem;
+  color: #94a3b8;
+  line-height: 1.5;
+}
+
+@media (max-width: 640px) {
+  .shell {
+    padding: 1.5rem 1rem 3rem;
+  }
+
+  .docHeader,
+  .docBody {
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+  }
+}
