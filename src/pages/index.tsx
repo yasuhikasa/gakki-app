@@ -181,7 +181,7 @@ export default function Home() {
               <p className={styles.lead}>
                 本ページは、私の経歴・活動・リンクを明示する目的で運営しています。読者の皆様が、信頼できる要約にアクセスできるよう構成しています。
               </p>
-              <div className={styles.metaRow}>
+              {/* <div className={styles.metaRow}>
                 <span>
                   最終更新目安: <kbd>随時</kbd>
                 </span>
@@ -194,7 +194,7 @@ export default function Home() {
                     正規URL: <kbd>NEXT_PUBLIC_SITE_URL 設定後に表示</kbd>
                   </span>
                 )}
-              </div>
+              </div> */}
             </header>
 
             <div className={styles.docBody}>
